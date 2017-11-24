@@ -1,0 +1,25 @@
+{
+  "name": "stockboy-app",
+  "version": "1.0.0",
+  "description": "The front-end for Stock Boy, a stock trading simulator.",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack -p",
+    "serve": "webpack-dev-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benthepoet/stockboy-app.git"
+  },
+  "author": "Ben Hanna <benpaulhanna@gmail.com>",
+  "license": "BSD3",
+  "bugs": {
+    "url": "https://github.com/benthepoet/stockboy-app/issues"
+  },
+  "homepage": "https://github.com/benthepoet/stockboy-app#readme",
+  "dependencies": {
+    "elm-webpack-loader": "^4.4.0",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4"
+  }
+}
