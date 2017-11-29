@@ -1,22 +1,22 @@
 {
-  "name": "stockboy-app",
+  "name": "elm-webpack-starter",
   "version": "1.0.0",
-  "description": "The front-end for Stock Boy, a stock trading simulator.",
+  "description": "An Elm starter application utilizing Webpack.",
   "main": "index.js",
   "scripts": {
     "build": "webpack -p",
-    "serve": "webpack-dev-server"
+    "serve": "webpack-dev-server --host 0.0.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/benthepoet/stockboy-app.git"
+    "url": "git+https://github.com/benthepoet/elm-webpack-starter.git"
   },
   "author": "Ben Hanna <benpaulhanna@gmail.com>",
   "license": "BSD3",
   "bugs": {
-    "url": "https://github.com/benthepoet/stockboy-app/issues"
+    "url": "https://github.com/benthepoet/elm-webpack-starter/issues"
   },
-  "homepage": "https://github.com/benthepoet/stockboy-app#readme",
+  "homepage": "https://github.com/benthepoet/elm-webpack-starter#readme",
   "dependencies": {
     "elm-webpack-loader": "^4.4.0",
     "webpack": "^3.8.1",

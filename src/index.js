@@ -1,2 +1,2 @@
 const Elm = require('./elm/Main.elm');
-Elm.Main.fullscreen();
+Elm.Main.embed(document.querySelector('#main'));

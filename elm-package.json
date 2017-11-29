@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
-    "summary": "The front-end for Stock Boy, a stock trading simulator.",
-    "repository": "https://github.com/benthepoet/stockboy-app.git",
+    "summary": "An Elm starter application utilizing Webpack.",
+    "repository": "https://github.com/benthepoet/elm-webpack-starter.git",
     "license": "BSD3",
     "source-directories": [
         "."

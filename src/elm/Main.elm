@@ -1,38 +1,36 @@
-import Html exposing (Html, div, form, input)
-import Html.Attributes as Attr
+import Html exposing (beginnerProgram, div, form, h3, input, text)
+import Html.Attributes exposing (type_, value)
+import Html.Events exposing (onInput)
 
 
 type alias Model = 
-    { username: String
-    , password: String
-    , token: Maybe String
+    { message: String
     }
     
 type Msg 
-    = TypeUsername String
-    | TypePassword String
-    | SignIn
+    = TypeMessage String
     
-model = Model "" "" Nothing
+model = Model "Elm Webpack Starter"
 
 update msg model = 
     case msg of
-        TypeUsername username ->
-            { model | username = username }
-        TypePassword password ->
-            { model | password = password }
-        SignIn ->
-            model
+        TypeMessage message ->
+            { model | message = message }
 
 view model =
     div [] 
-        [ form [] 
-            [ input [Attr.type_ "text"] []
+        [ h3 [] [text model.message]
+        , form [] 
+            [ input 
+                [ type_ "text"
+                , onInput TypeMessage
+                , value model.message
+                ] []
             ]
         ]
 
 main 
-    = Html.beginnerProgram {
+    = beginnerProgram {
         model = model,
         update = update,
         view = view
