@@ -5,7 +5,8 @@ module Main exposing (..)
 import Html exposing (Html, div, form, input, p, text)
 import Html.Attributes as Attributes
 import Html.Events as Events
-
+import Http
+import Request
 
 -- TYPES
 
@@ -16,7 +17,8 @@ type alias Model =
     }
     
 type Msg 
-    = TypeEmail String
+    = LoadToken (Result Http.Error Request.AuthResponse)
+    | TypeEmail String
     | TypePassword String
     | SubmitCredentials
     
@@ -28,6 +30,14 @@ init =
 
 update msg model = 
     case msg of
+        LoadToken (Ok authResponse) ->
+            ( { model | token = Just authResponse.token }
+            , Cmd.none
+            )        
+        
+        LoadToken (Err _) ->
+            ( model, Cmd.none )
+        
         TypeEmail email ->
             ( { model | email = email }
             , Cmd.none
@@ -37,7 +47,9 @@ update msg model =
             , Cmd.none
             )
         SubmitCredentials ->
-            (model, Cmd.none)
+            ( model
+            , Http.send LoadToken (Request.authenticate model.email model.password) 
+            )
 
 view model =
     div [] 

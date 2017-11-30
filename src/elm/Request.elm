@@ -4,11 +4,15 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 
+type alias AuthResponse =
+    { token: String
+    }
+
 apiUrl path =
-    "https://api.stockboy.us" + path
+    "https://api.stockboy.us" ++ path
 
 authDecoder = 
-    Decode.decodeString (Decode.field "token" Decode.string)
+    Decode.map AuthResponse (Decode.field "token" Decode.string)
 
 authEncoder email password = 
     Encode.object
