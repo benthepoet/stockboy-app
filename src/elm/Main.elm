@@ -59,7 +59,7 @@ view model =
                 , Events.onInput TypeEmail
                 ] []
             , input 
-                [ Attributes.type_ "text"
+                [ Attributes.type_ "password"
                 , Events.onInput TypePassword
                 ] []
             , input
