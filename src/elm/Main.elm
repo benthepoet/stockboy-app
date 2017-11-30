@@ -1,34 +1,61 @@
-import Html exposing (Html, div, form, input)
-import Html.Attributes as Attr
+module Main exposing (..)
 
+-- IMPORTS
+
+import Html exposing (Html, div, form, input, p, text)
+import Html.Attributes as Attributes
+import Html.Events as Events
+
+
+-- TYPES
 
 type alias Model = 
-    { username: String
+    { email: String
     , password: String
     , token: Maybe String
     }
     
 type Msg 
-    = TypeUsername String
+    = TypeEmail String
     | TypePassword String
-    | SignIn
+    | SubmitCredentials
+    
+-- PROGRAM
     
 model = Model "" "" Nothing
 
 update msg model = 
     case msg of
-        TypeUsername username ->
-            { model | username = username }
+        TypeEmail email ->
+            { model | email = email }
         TypePassword password ->
             { model | password = password }
-        SignIn ->
+        SubmitCredentials ->
             model
 
 view model =
     div [] 
-        [ form [] 
-            [ input [Attr.type_ "text"] []
+        [ form [Events.onSubmit SubmitCredentials] 
+            [ input 
+                [ Attributes.type_ "text"
+                , Events.onInput TypeEmail
+                ] []
+            , input 
+                [ Attributes.type_ "text"
+                , Events.onInput TypePassword
+                ] []
+            , input
+                [ Attributes.type_ "submit"
+                , Attributes.value "Sign In"
+                ] []
             ]
+        , p [] 
+            (case model.token of
+                Just token ->
+                    [ text token ]
+                Nothing ->
+                    []
+            )
         ]
 
 main 
