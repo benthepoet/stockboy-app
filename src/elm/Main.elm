@@ -8,7 +8,7 @@ import Html.Events as Events
 import Http
 import Navigation
 import Request
-import Routes
+import Route
 import Time
 
 -- TYPES
@@ -18,7 +18,7 @@ type alias Model =
     , password: String
     , pollInterval: Time.Time
     , positions: List Request.PositionResponse
-    , route: Maybe Routes.Route
+    , route: Maybe Route.Route
     , token: Maybe String
     }
     
@@ -26,7 +26,7 @@ type Msg
     = LoadPositions (Result Http.Error (List Request.PositionResponse))
     | LoadToken (Result Http.Error Request.AuthResponse)
     | Poll Time.Time
-    | RouteChange (Maybe Routes.Route)
+    | RouteChange (Maybe Route.Route)
     | SignOut
     | SubmitCredentials
     | TypeEmail String
@@ -35,7 +35,7 @@ type Msg
 -- PROGRAM
     
 init location =
-    ( Model "" "" (10 * 1000) [] Nothing Nothing
+    ( Model "" "" (10 * 1000) [] (Route.parse location) Nothing
     , Cmd.none)
 
 update msg model = 
@@ -93,7 +93,13 @@ update msg model =
 subscriptions model = 
     Time.every model.pollInterval Poll
 
-view model =
+viewMyPositions model =
+    div [] [ text "My Positions" ]
+    
+viewNotFound model =
+    div [] [ text "Not Found" ]
+    
+viewSignIn model =
     div [] 
         [ form [Events.onSubmit SubmitCredentials] 
             [ input 
@@ -120,8 +126,19 @@ view model =
             )
         ]
 
+view model =
+    case model.route of
+        Just Route.MyPositions ->
+            viewMyPositions model
+        
+        Just Route.SignIn ->
+            viewSignIn model
+            
+        Nothing ->
+            viewNotFound model
+
 main 
-    = Navigation.program (Routes.parse >> RouteChange)
+    = Navigation.program (Route.parse >> RouteChange)
         { init = init
         , update = update
         , subscriptions = subscriptions
