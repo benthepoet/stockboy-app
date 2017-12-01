@@ -2,7 +2,7 @@ module Main exposing (..)
 
 -- IMPORTS
 
-import Html exposing (Html, div, form, input, p, text)
+import Html exposing (Html, button, div, form, input, p, span, text)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Http
@@ -23,9 +23,10 @@ type Msg
     = LoadPositions (Result Http.Error (List Request.PositionResponse))
     | LoadToken (Result Http.Error Request.AuthResponse)
     | Poll Time.Time
+    | SignOut
+    | SubmitCredentials
     | TypeEmail String
     | TypePassword String
-    | SubmitCredentials
     
 -- PROGRAM
     
@@ -60,17 +61,24 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none )
         
+        SignOut ->
+            ( { model | token = Nothing } 
+            , Cmd.none
+            )
+        
+        SubmitCredentials ->
+            ( model
+            , Http.send LoadToken (Request.authenticate model.email model.password) 
+            )
+        
         TypeEmail email ->
             ( { model | email = email }
             , Cmd.none
             )
+            
         TypePassword password ->
             ( { model | password = password }
             , Cmd.none
-            )
-        SubmitCredentials ->
-            ( model
-            , Http.send LoadToken (Request.authenticate model.email model.password) 
             )
 
 subscriptions model = 
@@ -92,10 +100,12 @@ view model =
                 , Attributes.value "Sign In"
                 ] []
             ]
-        , p [] 
+        , div [] 
             (case model.token of
                 Just token ->
-                    [ text token ]
+                    [ p [] [ text token ] 
+                    , button [ Events.onClick SignOut ] [ text "Sign Out"] 
+                    ]
                 Nothing ->
                     []
             )

@@ -36,12 +36,15 @@ authenticate email password =
     Http.post (apiUrl "/auth") (Http.jsonBody (authEncoder email password)) authDecoder  
     
 getPositions token = 
-    Http.request 
+    get "/positions" token (Decode.list positionDecoder)
+        
+get path token decoder =
+    Http.request
         { method = "GET"
-        , url = apiUrl "/positions"
+        , url = apiUrl path
         , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
         , body = Http.emptyBody
-        , expect = Http.expectJson (Decode.list positionDecoder)
+        , expect = Http.expectJson decoder
         , timeout = Nothing
         , withCredentials = False
         }
