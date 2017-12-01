@@ -19,7 +19,9 @@
   "homepage": "https://github.com/benthepoet/stockboy-app#readme",
   "dependencies": {
     "elm-webpack-loader": "^4.4.0",
-    "webpack": "^3.8.1",
-    "webpack-dev-server": "^2.9.4"
+    "webpack": "^3.8.1"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^2.9.5"
   }
 }
