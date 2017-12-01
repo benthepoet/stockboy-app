@@ -15,12 +15,13 @@ type alias Model =
     { email: String
     , password: String
     , pollInterval: Time.Time
-    , pollCount: Int
+    , positions: List Request.PositionResponse
     , token: Maybe String
     }
     
 type Msg 
-    = LoadToken (Result Http.Error Request.AuthResponse)
+    = LoadPositions (Result Http.Error (List Request.PositionResponse))
+    | LoadToken (Result Http.Error Request.AuthResponse)
     | Poll Time.Time
     | TypeEmail String
     | TypePassword String
@@ -29,11 +30,19 @@ type Msg
 -- PROGRAM
     
 init =
-    ( Model "" "" (3 * 1000) 0 Nothing
+    ( Model "" "" (10 * 1000) [] Nothing
     , Cmd.none)
 
 update msg model = 
     case msg of
+        LoadPositions (Ok positions) ->
+            ( { model | positions = positions }
+            , Cmd.none 
+            )
+        
+        LoadPositions (Err _) ->
+            ( model, Cmd.none )
+        
         LoadToken (Ok authResponse) ->
             ( { model | token = Just authResponse.token }
             , Cmd.none
@@ -43,8 +52,13 @@ update msg model =
             ( model, Cmd.none )
             
         Poll time ->
-            ( { model | pollCount = model.pollCount + 1 }
-            , Cmd.none )
+            case model.token of
+                Just token ->
+                    ( model
+                    , Http.send LoadPositions (Request.getPositions token)
+                    )
+                Nothing ->
+                    ( model, Cmd.none )
         
         TypeEmail email ->
             ( { model | email = email }
@@ -85,7 +99,6 @@ view model =
                 Nothing ->
                     []
             )
-        , p [] [text ("Poll Count: " ++ (toString model.pollCount))]
         ]
 
 main 
