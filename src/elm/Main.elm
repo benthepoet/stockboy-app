@@ -6,7 +6,9 @@ import Html exposing (Html, button, div, form, input, p, span, text)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Http
+import Navigation
 import Request
+import Routes
 import Time
 
 -- TYPES
@@ -16,6 +18,7 @@ type alias Model =
     , password: String
     , pollInterval: Time.Time
     , positions: List Request.PositionResponse
+    , route: Maybe Routes.Route
     , token: Maybe String
     }
     
@@ -23,6 +26,7 @@ type Msg
     = LoadPositions (Result Http.Error (List Request.PositionResponse))
     | LoadToken (Result Http.Error Request.AuthResponse)
     | Poll Time.Time
+    | RouteChange (Maybe Routes.Route)
     | SignOut
     | SubmitCredentials
     | TypeEmail String
@@ -30,8 +34,8 @@ type Msg
     
 -- PROGRAM
     
-init =
-    ( Model "" "" (10 * 1000) [] Nothing
+init location =
+    ( Model "" "" (10 * 1000) [] Nothing Nothing
     , Cmd.none)
 
 update msg model = 
@@ -60,6 +64,11 @@ update msg model =
                     )
                 Nothing ->
                     ( model, Cmd.none )
+        
+        RouteChange route ->
+            ( { model | route = route }
+            , Cmd.none
+            )
         
         SignOut ->
             ( { model | token = Nothing } 
@@ -112,7 +121,7 @@ view model =
         ]
 
 main 
-    = Html.program 
+    = Navigation.program (Routes.parse RouteChange)
         { init = init
         , update = update
         , subscriptions = subscriptions
