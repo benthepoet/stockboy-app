@@ -7,17 +7,21 @@ import Html.Attributes as Attributes
 import Html.Events as Events
 import Http
 import Request
+import Time
 
 -- TYPES
 
 type alias Model = 
     { email: String
     , password: String
+    , pollInterval: Time.Time
+    , pollCount: Int
     , token: Maybe String
     }
     
 type Msg 
     = LoadToken (Result Http.Error Request.AuthResponse)
+    | Poll Time.Time
     | TypeEmail String
     | TypePassword String
     | SubmitCredentials
@@ -25,7 +29,7 @@ type Msg
 -- PROGRAM
     
 init =
-    ( Model "" "" Nothing
+    ( Model "" "" (3 * 1000) 0 Nothing
     , Cmd.none)
 
 update msg model = 
@@ -37,6 +41,10 @@ update msg model =
         
         LoadToken (Err _) ->
             ( model, Cmd.none )
+            
+        Poll time ->
+            ( { model | pollCount = model.pollCount + 1 }
+            , Cmd.none )
         
         TypeEmail email ->
             ( { model | email = email }
@@ -50,6 +58,9 @@ update msg model =
             ( model
             , Http.send LoadToken (Request.authenticate model.email model.password) 
             )
+
+subscriptions model = 
+    Time.every model.pollInterval Poll
 
 view model =
     div [] 
@@ -74,12 +85,13 @@ view model =
                 Nothing ->
                     []
             )
+        , p [] [text ("Poll Count: " ++ (toString model.pollCount))]
         ]
 
 main 
     = Html.program 
         { init = init
         , update = update
-        , subscriptions = (\_ -> Sub.none)
+        , subscriptions = subscriptions
         , view = view
         } 
