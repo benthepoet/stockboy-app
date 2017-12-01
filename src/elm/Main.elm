@@ -121,7 +121,7 @@ view model =
         ]
 
 main 
-    = Navigation.program (Routes.parse RouteChange)
+    = Navigation.program (Routes.parse >> RouteChange)
         { init = init
         , update = update
         , subscriptions = subscriptions

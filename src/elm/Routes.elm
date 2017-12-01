@@ -6,9 +6,8 @@ type Route
     = MyPositions
     | SignIn
 
-parse msg location =
+parse location =
     parsePath route location
-        |> msg
 
 route =
     oneOf
