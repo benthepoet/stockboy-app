@@ -7,6 +7,7 @@ type ProtectedRoute
     
 type PublicRoute
     = SignIn
+    | NotFound
 
 type Route
     = Protected ProtectedRoute 
@@ -14,9 +15,9 @@ type Route
 
 parse location =
     if String.isEmpty location.hash then
-        Just (Protected MyPositions)
+        Protected MyPositions
     else 
-        parseHash route location
+        Maybe.withDefault (Public NotFound) (parseHash route location)
 
 route =
     oneOf

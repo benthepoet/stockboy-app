@@ -18,7 +18,7 @@ type alias Model =
     , password: String
     , pollInterval: Time.Time
     , positions: List Request.PositionResponse
-    , route: Maybe Route.Route
+    , route: Route.Route
     , token: Maybe String
     }
     
@@ -26,7 +26,7 @@ type Msg
     = LoadPositions (Result Http.Error (List Request.PositionResponse))
     | LoadToken (Result Http.Error Request.AuthResponse)
     | Poll Time.Time
-    | RouteChange (Maybe Route.Route)
+    | RouteChange Route.Route
     | SignOut
     | SubmitCredentials
     | TypeEmail String
@@ -128,13 +128,13 @@ viewSignIn model =
 
 view model =
     case model.route of
-        Just (Route.Protected Route.MyPositions) ->
+        Route.Protected Route.MyPositions ->
             viewMyPositions model
         
-        Just (Route.Public Route.SignIn) ->
+        Route.Public Route.SignIn ->
             viewSignIn model
             
-        Nothing ->
+        Route.Public Route.NotFound ->
             viewNotFound model
 
 main 
