@@ -66,9 +66,19 @@ update msg model =
                     ( model, Cmd.none )
         
         RouteChange route ->
-            ( { model | route = route }
-            , Cmd.none
-            )
+            case route of
+                Route.Protected page ->
+                    if model.token == Nothing then
+                        ( model, Cmd.none ) 
+                    else
+                        ( { model | route = route }
+                        , Cmd.none
+                        )
+                Route.Public page ->
+                    ( { model | route = route }
+                    , Cmd.none
+                    )
+        
         
         SignOut ->
             ( { model | token = Nothing } 
