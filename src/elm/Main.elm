@@ -128,10 +128,10 @@ viewSignIn model =
 
 view model =
     case model.route of
-        Just Route.MyPositions ->
+        Just (Route.Protected Route.MyPositions) ->
             viewMyPositions model
         
-        Just Route.SignIn ->
+        Just (Route.Public Route.SignIn) ->
             viewSignIn model
             
         Nothing ->
