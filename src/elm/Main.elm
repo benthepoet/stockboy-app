@@ -2,7 +2,7 @@ module Main exposing (..)
 
 -- IMPORTS
 
-import Html exposing (Html, button, div, form, input, p, span, text)
+import Html exposing (Html, button, div, form, i, input, p, span, text)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Http
@@ -54,7 +54,7 @@ update msg model =
         
         LoadToken (Ok authResponse) ->
             ( { model | token = Just authResponse.token }
-            , Cmd.none
+            , Navigation.newUrl "#/"
             )        
         
         LoadToken (Err _) ->
@@ -86,7 +86,7 @@ update msg model =
         
         SignOut ->
             ( { model | token = Nothing } 
-            , Cmd.none
+            , Navigation.newUrl "#/signin"
             )
         
         SubmitCredentials ->
@@ -108,7 +108,12 @@ subscriptions model =
     Time.every model.pollInterval Poll
 
 viewMyPositions model =
-    div [] [ text "My Positions" ]
+    div [] 
+        [ p [] [ text "My Positions" ]
+        , button 
+            [ Attributes.type_ "button"
+            , Events.onClick SignOut ] [ text "Sign Out" ]
+        ]
     
 viewNotFound model =
     div [] [ text "Not Found" ]
@@ -117,27 +122,33 @@ viewSignIn model =
     div [] 
         [ form [Events.onSubmit SubmitCredentials] 
             [ input 
-                [ Attributes.type_ "text"
+                [ Attributes.class "stack"
+                , Attributes.placeholder "Email"
+                , Attributes.type_ "text"
                 , Events.onInput TypeEmail
                 ] []
             , input 
-                [ Attributes.type_ "password"
+                [ Attributes.class "stack"
+                , Attributes.placeholder "Password"
+                , Attributes.type_ "password"
                 , Events.onInput TypePassword
                 ] []
-            , input
-                [ Attributes.type_ "submit"
-                , Attributes.value "Sign In"
-                ] []
+            , button
+                [ Attributes.class "stack"
+                , Attributes.type_ "submit"
+                ] 
+                [ i [ Attributes.class "fa fa-sign-in" ] [] 
+                , text "Sign In" 
+                ]
             ]
         , div [] 
-            (case model.token of
-                Just token ->
-                    [ p [] [ text token ] 
-                    , button [ Events.onClick SignOut ] [ text "Sign Out"] 
-                    ]
-                Nothing ->
-                    []
-            )
+            [ p [] [ text "Not a member?" ]
+            , input 
+                [ Attributes.class "button" 
+                , Attributes.type_ "button"
+                , Attributes.value "Create Account"
+                ] []
+            ]
         ]
 
 view model =
