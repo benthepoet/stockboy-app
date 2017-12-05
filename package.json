@@ -18,7 +18,12 @@
   },
   "homepage": "https://github.com/benthepoet/stockboy-app#readme",
   "dependencies": {
+    "css-loader": "^0.28.7",
     "elm-webpack-loader": "^4.4.0",
+    "node-sass": "^4.7.2",
+    "picnic": "^6.4.0",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.19.0",
     "webpack": "^3.8.1"
   },
   "devDependencies": {
