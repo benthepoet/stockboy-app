@@ -9,6 +9,7 @@ import Http
 import Navigation
 import Request
 import Route
+import Task
 import Time
 
 -- TYPES
@@ -35,8 +36,11 @@ type Msg
 -- PROGRAM
     
 init location =
-    ( Model "" "" (10 * 1000) [] (Route.parse location) Nothing
-    , Cmd.none)
+    let
+        route = Route.parse location
+    in
+        ( Model "" "" (10 * 1000) [] route Nothing
+        , Task.perform RouteChange (Task.succeed route))
 
 update msg model = 
     case msg of
@@ -69,7 +73,7 @@ update msg model =
             case route of
                 Route.Protected page ->
                     if model.token == Nothing then
-                        ( model, Cmd.none ) 
+                        ( model, Navigation.modifyUrl "#/signin" ) 
                     else
                         ( { model | route = route }
                         , Cmd.none
