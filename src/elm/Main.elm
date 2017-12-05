@@ -2,7 +2,7 @@ module Main exposing (..)
 
 -- IMPORTS
 
-import Html exposing (Html, button, div, form, i, input, p, span, text)
+import Html exposing (Html, article, button, div, form, h1, h4, header, i, input, p, section, span, text)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Http
@@ -108,11 +108,27 @@ subscriptions model =
     Time.every model.pollInterval Poll
 
 viewMyPositions model =
-    div [] 
-        [ p [] [ text "My Positions" ]
-        , button 
+    div [ Attributes.class "row" ] 
+        [ button 
             [ Attributes.type_ "button"
             , Events.onClick SignOut ] [ text "Sign Out" ]
+        , article [ Attributes.class "card shadow my-account" ]
+            [ header [] [ text "My Account" ]
+            , section [ Attributes.class "padding" ]
+                [ p [] [ text "Equity Balance" ]
+                , p [] [ text "Cash Balance" ]
+                , p [] [ text "Account Value" ]
+                ]
+            ]
+        , article [ Attributes.class "card shadow position" ]
+            [ section [ Attributes.class "padding" ]
+                [ h1 []
+                    [ span [ Attributes.class "label success" ] [ text "3.14%"] 
+                    ]
+                , h4 [] []
+                , p [] []
+                ]
+            ]
         ]
     
 viewNotFound model =
