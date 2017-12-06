@@ -111,7 +111,15 @@ viewPosition position =
     article [ Attributes.class "card shadow position" ]
         [ section [ Attributes.class "padding" ]
             [ h1 []
-                [ span [ Attributes.class "label success" ] [ position.profitRatio |> (*) 100 |> toString |> text ]  
+                [ span 
+                    [ Attributes.class "label success" 
+                    ] 
+                    [ position.profitRatio 
+                        |> (*) 100 
+                        |> toString 
+                        |> (++) "%"
+                        |> text 
+                    ]  
                 ]
             , h4 [] []
             , p [] []
