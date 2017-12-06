@@ -107,6 +107,17 @@ update msg model =
 subscriptions model = 
     Time.every model.pollInterval Poll
 
+viewPosition position =
+    article [ Attributes.class "card shadow position" ]
+        [ section [ Attributes.class "padding" ]
+            [ h1 []
+                [ span [ Attributes.class "label success" ] [ position.profitRatio |> (*) 100 |> toString |> text ]  
+                ]
+            , h4 [] []
+            , p [] []
+            ]
+        ]
+
 viewMyPositions model =
     div [ Attributes.class "row" ] 
         [ button 
@@ -120,15 +131,7 @@ viewMyPositions model =
                 , p [] [ text "Account Value" ]
                 ]
             ]
-        , article [ Attributes.class "card shadow position" ]
-            [ section [ Attributes.class "padding" ]
-                [ h1 []
-                    [ span [ Attributes.class "label success" ] [ text "3.14%"] 
-                    ]
-                , h4 [] []
-                , p [] []
-                ]
-            ]
+        , div [] <| List.map viewPosition model.positions
         ]
     
 viewNotFound model =
