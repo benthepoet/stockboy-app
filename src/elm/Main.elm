@@ -11,6 +11,7 @@ import Request
 import Route
 import Task
 import Time
+import Util
 
 -- TYPES
 
@@ -112,17 +113,11 @@ viewPosition position =
         [ section [ Attributes.class "padding" ]
             [ h1 []
                 [ span 
-                    [ Attributes.class "label success" 
-                    ] 
-                    [ position.profitRatio 
-                        |> (*) 100 
-                        |> toString 
-                        |> (++) "%"
-                        |> text 
-                    ]  
+                    [ Attributes.class "label success" ] 
+                    [ text <| (Util.toFixed 2 (position.profitRatio * 100)) ++ "%" ]  
                 ]
-            , h4 [] []
-            , p [] []
+            , h4 [] [ text position.stock.symbol ]
+            , p [] [ text <| (toString position.totalUnits) ++ " shares" ]
             ]
         ]
 

@@ -12,6 +12,12 @@ type alias PositionResponse =
     { averagePrice: Float
     , profitRatio: Float
     , totalUnits: Int
+    , stock: Stock
+    }
+    
+type alias Stock = 
+    { symbol: String
+    , lastPrice: Float
     }
 
 apiUrl path =
@@ -27,10 +33,16 @@ authEncoder email password =
         ]
         
 positionDecoder =
-    Decode.map3 PositionResponse 
+    Decode.map4 PositionResponse 
         (Decode.field "average_price" Decode.float)
         (Decode.field "profit_ratio" Decode.float)
         (Decode.field "total_units" Decode.int)
+        (Decode.field "stock" stockDecoder)
+
+stockDecoder =
+    Decode.map2 Stock 
+        (Decode.field "symbol" Decode.string)
+        (Decode.field "last_price" Decode.float)
 
 authenticate email password =
     Http.post (apiUrl "/auth") (Http.jsonBody (authEncoder email password)) authDecoder  
