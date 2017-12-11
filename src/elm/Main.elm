@@ -16,14 +16,14 @@ import Util
 -- TYPES
 
 type alias Model = 
-    { email: String
+    { balance: Float
+    , email: String
     , equity: Float
     , password: String
     , pollInterval: Time.Time
     , positions: List Request.PositionResponse
     , route: Route.Route
     , token: Maybe String
-    , user: Maybe Request.User
     }
     
 type Msg 
@@ -43,7 +43,7 @@ init location =
     let
         route = Route.parse location
     in
-        ( Model "" 0 "" (10 * 1000) [] route Nothing Nothing
+        ( Model 0 "" 0 "" (10 * 1000) [] route Nothing
         , Task.perform RouteChange (Task.succeed route))
 
 calculateEquity positions =
@@ -65,14 +65,17 @@ update msg model =
         
         LoadToken (Ok authResponse) ->
             ( { model | token = Just authResponse.token }
-            , Navigation.newUrl "#/"
+            , Cmd.batch 
+                [ Navigation.newUrl "#/"
+                , Task.perform Poll Time.now
+                ]
             )        
         
         LoadToken (Err _) ->
             ( model, Cmd.none )
             
         LoadUser (Ok user) ->
-            ( { model | user = Just user }
+            ( { model | balance = user.balance }
             , Cmd.none
             )
         
@@ -154,8 +157,14 @@ viewMyPositions model =
                     [ text "Equity Balance" 
                     , span [ Attributes.class "float" ] [ text <| "$" ++ (Util.toFixed 2 model.equity) ]
                     ]
-                , p [] [ text "Cash Balance" ]
-                , p [] [ text "Account Value" ]
+                , p [] 
+                    [ text "Cash Balance" 
+                    , span [ Attributes.class "float" ] [ text <| "$" ++ (Util.toFixed 2 model.balance) ]
+                    ]
+                , p [] 
+                    [ text "Account Value" 
+                    , span [ Attributes.class "float" ] [ text <| "$" ++ (Util.toFixed 2 (model.equity + model.balance)) ]
+                    ]
                 ]
             ]
         , div [] <| List.map viewPosition model.positions
