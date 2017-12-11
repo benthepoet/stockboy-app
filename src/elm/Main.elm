@@ -41,9 +41,10 @@ type Msg
     
 init location =
     let
+        pollInterval = 10 * 1000
         route = Route.parse location
     in
-        ( Model 0 "" 0 "" (10 * 1000) [] route Nothing
+        ( Model 0 "" 0 "" pollInterval [] route Nothing
         , Task.perform RouteChange (Task.succeed route))
 
 calculateEquity positions =
