@@ -3,4 +3,42 @@
 body {
     padding: 16px;
     background-color: #fafafa;
+    
+    .shadow {
+        box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .card {
+        
+        header {
+            background-color: #eeffea;
+        }
+        
+        section.padding {
+            padding-bottom: 0.6em;
+        }
+        
+        span.float {
+            float: right;
+        }
+        
+    }
+        
+    .position:hover {
+        background-color: #eee;
+    }
+        
+    .position {
+        
+        h1 {
+            float: right; 
+            padding: 0.25em 0;
+        }
+        
+        h4 {
+            padding-top: 0; 
+            padding-bottom: 0;
+        }
+        
+    }
 }

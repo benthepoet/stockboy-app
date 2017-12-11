@@ -17,6 +17,7 @@ import Util
 
 type alias Model = 
     { email: String
+    , equity: Float
     , password: String
     , pollInterval: Time.Time
     , positions: List Request.PositionResponse
@@ -40,13 +41,20 @@ init location =
     let
         route = Route.parse location
     in
-        ( Model "" "" (10 * 1000) [] route Nothing
+        ( Model "" 0 "" (10 * 1000) [] route Nothing
         , Task.perform RouteChange (Task.succeed route))
+
+calculateEquity positions =
+    positions
+        |> List.map (\n -> (toFloat n.totalUnits) * n.stock.lastPrice)
+        |> List.sum
 
 update msg model = 
     case msg of
         LoadPositions (Ok positions) ->
-            ( { model | positions = positions }
+            ( { model 
+                | equity = calculateEquity positions
+                , positions = positions }
             , Cmd.none 
             )
         
@@ -129,7 +137,10 @@ viewMyPositions model =
         , article [ Attributes.class "card shadow my-account" ]
             [ header [] [ text "My Account" ]
             , section [ Attributes.class "padding" ]
-                [ p [] [ text "Equity Balance" ]
+                [ p [] 
+                    [ text "Equity Balance" 
+                    , span [ Attributes.class "float" ] [ text <| "$" ++ (Util.toFixed 2 model.equity) ]
+                    ]
                 , p [] [ text "Cash Balance" ]
                 , p [] [ text "Account Value" ]
                 ]

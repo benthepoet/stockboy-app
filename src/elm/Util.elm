@@ -8,7 +8,7 @@ toFixed places value =
             String.split "." (toString <| (toFloat (round <| value * 10 ^ places) / 10 ^ places))
     in
         let
-            head = Maybe.withDefault "0" (List.head parts)
-            tail = Maybe.withDefault [""] (List.tail parts) 
+            head = List.head parts |> Maybe.withDefault "0"
+            tail = List.tail parts |> Maybe.withDefault []
         in
             String.join "." (head :: List.map (String.padRight (round places) '0') tail)
