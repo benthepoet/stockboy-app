@@ -23,11 +23,13 @@ type alias Model =
     , positions: List Request.PositionResponse
     , route: Route.Route
     , token: Maybe String
+    , user: Maybe Request.User
     }
     
 type Msg 
     = LoadPositions (Result Http.Error (List Request.PositionResponse))
     | LoadToken (Result Http.Error Request.AuthResponse)
+    | LoadUser (Result Http.Error Request.User)
     | Poll Time.Time
     | RouteChange Route.Route
     | SignOut
@@ -41,7 +43,7 @@ init location =
     let
         route = Route.parse location
     in
-        ( Model "" 0 "" (10 * 1000) [] route Nothing
+        ( Model "" 0 "" (10 * 1000) [] route Nothing Nothing
         , Task.perform RouteChange (Task.succeed route))
 
 calculateEquity positions =
@@ -69,11 +71,22 @@ update msg model =
         LoadToken (Err _) ->
             ( model, Cmd.none )
             
+        LoadUser (Ok user) ->
+            ( { model | user = Just user }
+            , Cmd.none
+            )
+        
+        LoadUser (Err _) ->
+            ( model, Cmd.none )
+            
         Poll time ->
             case model.token of
                 Just token ->
                     ( model
-                    , Http.send LoadPositions (Request.getPositions token)
+                    , Cmd.batch 
+                        [ Http.send LoadPositions (Request.getPositions token)
+                        , Http.send LoadUser (Request.getUser token)
+                        ]
                     )
                 Nothing ->
                     ( model, Cmd.none )

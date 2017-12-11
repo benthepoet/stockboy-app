@@ -19,6 +19,10 @@ type alias Stock =
     { symbol: String
     , lastPrice: Float
     }
+    
+type alias User =
+    { balance: Float
+    }
 
 apiUrl path =
     "https://api.stockboy.us" ++ path
@@ -44,11 +48,18 @@ stockDecoder =
         (Decode.field "symbol" Decode.string)
         (Decode.field "last_price" Decode.float)
 
+userDecoder =
+    Decode.map User
+        (Decode.field "balance" Decode.float)
+
 authenticate email password =
     Http.post (apiUrl "/auth") (Http.jsonBody (authEncoder email password)) authDecoder  
     
 getPositions token = 
     get "/positions" token (Decode.list positionDecoder)
+
+getUser token = 
+    get "/users/me" token userDecoder
         
 get path token decoder =
     Http.request
