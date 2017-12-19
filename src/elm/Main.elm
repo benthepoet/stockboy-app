@@ -67,7 +67,7 @@ update msg model =
         LoadToken (Ok authResponse) ->
             ( { model | token = Just authResponse.token }
             , Cmd.batch 
-                [ Navigation.newUrl "#/"
+                [ Navigation.newUrl (Route.toPath <| Route.Protected Route.MyPositions)
                 , Task.perform Poll Time.now
                 ]
             )        
@@ -99,7 +99,7 @@ update msg model =
             case route of
                 Route.Protected page ->
                     if model.token == Nothing then
-                        ( model, Navigation.modifyUrl "#/signin" ) 
+                        ( model, Navigation.modifyUrl (Route.toPath <| Route.Public Route.SignIn) ) 
                     else
                         ( { model | route = route }
                         , Cmd.none
@@ -109,10 +109,9 @@ update msg model =
                     , Cmd.none
                     )
         
-        
         SignOut ->
             ( { model | token = Nothing } 
-            , Navigation.newUrl "#/signin"
+            , Navigation.newUrl (Route.toPath <| Route.Public Route.SignIn)
             )
         
         SubmitCredentials ->

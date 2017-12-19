@@ -6,12 +6,23 @@ type ProtectedRoute
     = MyPositions
     
 type PublicRoute
-    = SignIn
-    | NotFound
+    = NotFound
+    | SignIn
 
 type Route
     = Protected ProtectedRoute 
     | Public PublicRoute
+
+toPath route =
+    case route of
+        Protected MyPositions ->
+            "#/"
+    
+        Public SignIn ->
+            "#/signin"
+            
+        Public NotFound ->
+            "#/notfound"
 
 parse location =
     if String.isEmpty location.hash then
