@@ -23,7 +23,7 @@ type alias Model =
     , pollInterval: Time.Time
     , positions: List Request.PositionResponse
     , route: Route.Route
-    , stock: Request.Stock
+    , stock: Maybe Request.Stock
     , token: Maybe String
     }
     
@@ -45,9 +45,8 @@ init location =
     let
         pollInterval = 10 * 1000
         route = Route.parse location
-        stock =  Request.Stock "" "" 0
     in
-        ( Model 0 "" 0 "" pollInterval [] route stock Nothing
+        ( Model 0 "" 0 "" pollInterval [] route Nothing Nothing
         , Task.perform RouteChange (Task.succeed route))
 
 calculateEquity positions =
@@ -68,7 +67,7 @@ update msg model =
             ( model, Cmd.none )
         
         LoadStock (Ok stock) ->
-            ( { model | stock = stock }
+            ( { model | stock = Just stock }
             , Cmd.none
             )
             
@@ -226,7 +225,13 @@ viewSignIn model =
         ]
 
 viewStockPosition model =
-    div [] [ text model.stock.name ]
+    div [] 
+        ( case model.stock of
+            Nothing -> 
+                []
+            Just stock ->
+                [ text stock.name ]
+        )
 
 view model =
     case model.route of
