@@ -23,11 +23,13 @@ type alias Model =
     , pollInterval: Time.Time
     , positions: List Request.PositionResponse
     , route: Route.Route
+    , stock: Request.Stock
     , token: Maybe String
     }
     
 type Msg 
     = LoadPositions (Result Http.Error (List Request.PositionResponse))
+    | LoadStock (Result Http.Error Request.Stock)
     | LoadToken (Result Http.Error Request.AuthResponse)
     | LoadUser (Result Http.Error Request.User)
     | Poll Time.Time
@@ -43,8 +45,9 @@ init location =
     let
         pollInterval = 10 * 1000
         route = Route.parse location
+        stock =  Request.Stock "" "" 0
     in
-        ( Model 0 "" 0 "" pollInterval [] route Nothing
+        ( Model 0 "" 0 "" pollInterval [] route stock Nothing
         , Task.perform RouteChange (Task.succeed route))
 
 calculateEquity positions =
@@ -62,6 +65,14 @@ update msg model =
             )
         
         LoadPositions (Err _) ->
+            ( model, Cmd.none )
+        
+        LoadStock (Ok stock) ->
+            ( { model | stock = stock }
+            , Cmd.none
+            )
+            
+        LoadStock (Err _) ->
             ( model, Cmd.none )
         
         LoadToken (Ok authResponse) ->
@@ -98,12 +109,20 @@ update msg model =
         RouteChange route ->
             case route of
                 Route.Protected page ->
-                    if model.token == Nothing then
-                        ( model, Navigation.modifyUrl (Route.toPath <| Route.Public Route.SignIn) ) 
-                    else
-                        ( { model | route = route }
-                        , Cmd.none
-                        )
+                    case model.token of 
+                        Nothing ->
+                            ( model, Navigation.modifyUrl (Route.toPath <| Route.Public Route.SignIn) ) 
+                        Just token -> 
+                            case page of
+                                Route.StockPosition id ->
+                                    ( { model | route = route }
+                                    , Http.send LoadStock (Request.getStock token id)
+                                    )
+                                    
+                                _ -> 
+                                    ( { model | route = route }
+                                    , Cmd.none
+                                    )
                 Route.Public page ->
                     ( { model | route = route }
                     , Cmd.none
@@ -206,10 +225,16 @@ viewSignIn model =
             ]
         ]
 
+viewStockPosition model =
+    div [] [ text model.stock.name ]
+
 view model =
     case model.route of
         Route.Protected Route.MyPositions ->
             viewMyPositions model
+        
+        Route.Protected (Route.StockPosition id) ->
+            viewStockPosition model
         
         Route.Public Route.SignIn ->
             viewSignIn model

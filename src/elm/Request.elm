@@ -17,6 +17,7 @@ type alias PositionResponse =
     
 type alias Stock = 
     { symbol: String
+    , name: String
     , lastPrice: Float
     }
     
@@ -44,8 +45,9 @@ positionDecoder =
         (Decode.field "stock" stockDecoder)
 
 stockDecoder =
-    Decode.map2 Stock 
+    Decode.map3 Stock 
         (Decode.field "symbol" Decode.string)
+        (Decode.field "name" Decode.string)
         (Decode.field "last_price" Decode.float)
 
 userDecoder =
@@ -57,6 +59,9 @@ authenticate email password =
     
 getPositions token = 
     get "/positions" token (Decode.list positionDecoder)
+
+getStock token id =
+    get ("/stocks/" ++ (toString id)) token stockDecoder
 
 getUser token = 
     get "/users/me" token userDecoder

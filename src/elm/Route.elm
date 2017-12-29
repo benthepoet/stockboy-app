@@ -1,9 +1,10 @@
 module Route exposing (..)
 
-import UrlParser exposing ((</>), map, oneOf, parseHash, s)
+import UrlParser exposing ((</>), int, map, oneOf, parseHash, s)
 
 type ProtectedRoute
     = MyPositions
+    | StockPosition Int
     
 type PublicRoute
     = NotFound
@@ -17,6 +18,9 @@ toPath route =
     case route of
         Protected MyPositions ->
             "#/"
+    
+        Protected (StockPosition id) ->
+            "#/stockposition/" ++ (toString id)
     
         Public SignIn ->
             "#/signin"
@@ -33,5 +37,6 @@ parse location =
 route =
     oneOf
         [ map (Protected MyPositions) (s "")
+        , map (Protected << StockPosition) (s "stockposition" </> int)
         , map (Public SignIn) (s "signin")
         ]
