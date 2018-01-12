@@ -4,6 +4,14 @@ body {
     padding: 16px;
     background-color: #fafafa;
     
+    > div {
+        margin-top: 48px;
+    }
+    
+    nav {
+        background-color: #0074d9;
+    }
+    
     .shadow {
         box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.05);
     }

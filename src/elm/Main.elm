@@ -2,7 +2,7 @@ module Main exposing (..)
 
 -- IMPORTS
 
-import Html exposing (Html, article, button, div, form, h1, h4, header, i, input, p, section, span, text)
+import Html exposing (Html, article, button, div, form, h1, h4, header, i, input, nav, p, section, span, text)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Http
@@ -150,19 +150,6 @@ update msg model =
 subscriptions model = 
     Time.every model.pollInterval Poll
 
-viewPosition position =
-    article [ Attributes.class "card shadow position" ]
-        [ section [ Attributes.class "padding" ]
-            [ h1 []
-                [ span 
-                    [ Attributes.class "label success" ] 
-                    [ text <| (Util.toFixed 2 (position.profitRatio * 100)) ++ "%" ]  
-                ]
-            , h4 [] [ text position.stock.symbol ]
-            , p [] [ text <| (toString position.totalUnits) ++ " shares" ]
-            ]
-        ]
-
 viewMyPositions model =
     div [ Attributes.class "row" ] 
         [ button 
@@ -188,8 +175,24 @@ viewMyPositions model =
         , div [] <| List.map viewPosition model.positions
         ]
     
+viewNav model =
+    nav [] []
+
 viewNotFound model =
     div [] [ text "Not Found" ]
+    
+viewPosition position =
+    article [ Attributes.class "card shadow position" ]
+        [ section [ Attributes.class "padding" ]
+            [ h1 []
+                [ span 
+                    [ Attributes.class "label success" ] 
+                    [ text <| (Util.toFixed 2 (position.profitRatio * 100)) ++ "%" ]  
+                ]
+            , h4 [] [ text position.stock.symbol ]
+            , p [] [ text <| (toString position.totalUnits) ++ " shares" ]
+            ]
+        ]
     
 viewSignIn model =
     div [] 
@@ -234,18 +237,27 @@ viewStockPosition model =
         )
 
 view model =
-    case model.route of
-        Route.Protected Route.MyPositions ->
-            viewMyPositions model
-        
-        Route.Protected (Route.StockPosition id) ->
-            viewStockPosition model
-        
-        Route.Public Route.SignIn ->
-            viewSignIn model
-            
-        Route.Public Route.NotFound ->
-            viewNotFound model
+    div [] 
+        [ viewNav model
+        , div [ Attributes.class "flex one three-600" ]
+            [ div [ Attributes.class "fifth-600 fourth-1000" ] []
+            , div [ Attributes.class "three-fifth-600 half-1000" ] 
+                [ case model.route of
+                    Route.Protected Route.MyPositions ->
+                        viewMyPositions model
+                    
+                    Route.Protected (Route.StockPosition id) ->
+                        viewStockPosition model
+                    
+                    Route.Public Route.SignIn ->
+                        viewSignIn model
+                        
+                    Route.Public Route.NotFound ->
+                        viewNotFound model
+                ]
+            , div [ Attributes.class "fifth-600 fourth-1000" ] []
+            ]
+        ]
 
 main 
     = Navigation.program (Route.parse >> RouteChange)
