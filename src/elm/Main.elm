@@ -2,7 +2,7 @@ module Main exposing (..)
 
 -- IMPORTS
 
-import Html exposing (Html, a, article, button, div, form, h1, h4, header, i, input, label, nav, p, section, span, table, text, tr, td)
+import Html exposing (Html, a, article, button, div, footer, form, h1, h3, h4, header, i, input, label, nav, p, section, span, table, text, tr, td)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Http
@@ -19,6 +19,7 @@ type alias Model =
     { balance: Float
     , email: String
     , equity: Float
+    , error: Bool
     , password: String
     , pollInterval: Time.Time
     , positions: List Request.PositionResponse
@@ -29,7 +30,8 @@ type alias Model =
     }
     
 type Msg 
-    = Home
+    = DismissError
+    | Home
     | LoadPositions (Result Http.Error (List Request.PositionResponse))
     | LoadStock (Result Http.Error Request.Stock)
     | LoadStocks (Result Http.Error (List Request.Stock))
@@ -52,7 +54,7 @@ init location =
         pollInterval = 10 * 1000
         route = Route.parse location
     in
-        ( Model 0 "" 0 "" pollInterval [] route Nothing [] Nothing
+        ( Model 0 "" 0 False "" pollInterval [] route Nothing [] Nothing
         , Task.perform RouteChange (Task.succeed route))
 
 calculateEquity positions =
@@ -62,6 +64,11 @@ calculateEquity positions =
 
 update msg model = 
     case msg of
+        DismissError ->
+            ( { model | error = False }
+            , Cmd.none
+            )
+    
         Home ->
             ( model
             , Navigation.newUrl (Route.toPath <| Route.Protected Route.MyPositions)
@@ -75,7 +82,9 @@ update msg model =
             )
         
         LoadPositions (Err _) ->
-            ( model, Cmd.none )
+            ( { model | error = True }
+            , Cmd.none 
+            )
         
         LoadStock (Ok stock) ->
             ( { model | stock = Just stock }
@@ -83,7 +92,9 @@ update msg model =
             )
             
         LoadStock (Err _) ->
-            ( model, Cmd.none )
+            ( { model | error = True }
+            , Cmd.none 
+            )
             
         LoadStocks (Ok stocks) ->
             ( { model | stocks = stocks }
@@ -91,7 +102,9 @@ update msg model =
             )
             
         LoadStocks (Err _) ->
-            ( model, Cmd.none )
+            ( { model | error = True }
+            , Cmd.none 
+            )
         
         LoadToken (Ok authResponse) ->
             ( { model | token = Just authResponse.token }
@@ -102,7 +115,9 @@ update msg model =
             )        
         
         LoadToken (Err _) ->
-            ( model, Cmd.none )
+            ( { model | error = True }
+            , Cmd.none 
+            )
             
         LoadUser (Ok user) ->
             ( { model | balance = user.balance }
@@ -110,7 +125,9 @@ update msg model =
             )
         
         LoadUser (Err _) ->
-            ( model, Cmd.none )
+            ( { model | error = True }
+            , Cmd.none 
+            )
             
         Poll time ->
             case model.token of
@@ -183,6 +200,32 @@ update msg model =
 
 subscriptions model = 
     Time.every model.pollInterval Poll
+
+viewError model =
+    div [ Attributes.class "modal" ]
+        [ input 
+            [ Attributes.name "error-modal"
+            , Attributes.type_ "checkbox"
+            , Attributes.checked model.error 
+            ] []
+        , label 
+            [ Attributes.for "error-modal"
+            , Attributes.class "overlay"
+            ] []
+        , article []
+            [ header [] 
+                [ h3 [] [ text "Warning" ]
+                ]
+            , section [ Attributes.class "content" ]
+                [ text "An unexpected error occurred." ]
+            , footer []
+                [ a 
+                    [ Attributes.class "button"
+                    , Events.onClick DismissError 
+                    ] [ text "Dismiss" ]
+                ]
+            ]
+        ]
 
 viewMyPositions model =
     div [ Attributes.class "row" ] 
@@ -343,6 +386,7 @@ view model =
                 ]
             , div [ Attributes.class "fifth-600 fourth-1000" ] []
             ]
+        , viewError model
         ]
 
 main 
