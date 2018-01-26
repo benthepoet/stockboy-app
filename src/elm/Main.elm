@@ -29,7 +29,8 @@ type alias Model =
     }
     
 type Msg 
-    = LoadPositions (Result Http.Error (List Request.PositionResponse))
+    = Home
+    | LoadPositions (Result Http.Error (List Request.PositionResponse))
     | LoadStock (Result Http.Error Request.Stock)
     | LoadStocks (Result Http.Error (List Request.Stock))
     | LoadToken (Result Http.Error Request.AuthResponse)
@@ -61,6 +62,11 @@ calculateEquity positions =
 
 update msg model = 
     case msg of
+        Home ->
+            ( model
+            , Navigation.newUrl (Route.toPath <| Route.Protected Route.MyPositions)
+            )
+    
         LoadPositions (Ok positions) ->
             ( { model 
                 | equity = calculateEquity positions
@@ -211,7 +217,7 @@ viewNav model =
                 , div [ Attributes.class "menu" ]
                     [ a 
                         [ Attributes.class "button"
-                        , Events.onClick Search ] 
+                        , Events.onClick Home ] 
                         [ i [ Attributes.class "fas fa-home" ] []
                         , text "My Portfolio" 
                         ]
