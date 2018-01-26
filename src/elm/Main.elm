@@ -2,7 +2,7 @@ module Main exposing (..)
 
 -- IMPORTS
 
-import Html exposing (Html, a, article, button, div, form, h1, h4, header, i, input, label, nav, p, section, span, text)
+import Html exposing (Html, a, article, button, div, form, h1, h4, header, i, input, label, nav, p, section, span, table, text, tr, td)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Http
@@ -24,20 +24,24 @@ type alias Model =
     , positions: List Request.PositionResponse
     , route: Route.Route
     , stock: Maybe Request.Stock
+    , stocks: List Request.Stock
     , token: Maybe String
     }
     
 type Msg 
     = LoadPositions (Result Http.Error (List Request.PositionResponse))
     | LoadStock (Result Http.Error Request.Stock)
+    | LoadStocks (Result Http.Error (List Request.Stock))
     | LoadToken (Result Http.Error Request.AuthResponse)
     | LoadUser (Result Http.Error Request.User)
     | Poll Time.Time
     | RouteChange Route.Route
+    | Search
     | SignOut
     | SubmitCredentials
     | TypeEmail String
     | TypePassword String
+    | TypeSearch String
     
 -- PROGRAM
     
@@ -46,7 +50,7 @@ init location =
         pollInterval = 10 * 1000
         route = Route.parse location
     in
-        ( Model 0 "" 0 "" pollInterval [] route Nothing Nothing
+        ( Model 0 "" 0 "" pollInterval [] route Nothing [] Nothing
         , Task.perform RouteChange (Task.succeed route))
 
 calculateEquity positions =
@@ -72,6 +76,14 @@ update msg model =
             )
             
         LoadStock (Err _) ->
+            ( model, Cmd.none )
+            
+        LoadStocks (Ok stocks) ->
+            ( { model | stocks = stocks }
+            , Cmd.none
+            )
+            
+        LoadStocks (Err _) ->
             ( model, Cmd.none )
         
         LoadToken (Ok authResponse) ->
@@ -127,6 +139,11 @@ update msg model =
                     , Cmd.none
                     )
         
+        Search ->
+            ( model
+            , Navigation.newUrl (Route.toPath <| Route.Protected Route.StockList)
+            )
+        
         SignOut ->
             ( { model | token = Nothing } 
             , Navigation.newUrl (Route.toPath <| Route.Public Route.SignIn)
@@ -145,6 +162,11 @@ update msg model =
         TypePassword password ->
             ( { model | password = password }
             , Cmd.none
+            )
+            
+        TypeSearch search ->
+            ( model
+            , Http.send LoadStocks (Request.getStocks (Maybe.withDefault "" model.token) search)
             )
 
 subscriptions model = 
@@ -183,6 +205,12 @@ viewNav model =
                 , div [ Attributes.class "menu" ]
                     [ a 
                         [ Attributes.class "button"
+                        , Events.onClick Search ] 
+                        [ i [ Attributes.class "fas fa-search" ] []
+                        , text "Search" 
+                        ]
+                    , a 
+                        [ Attributes.class "button"
                         , Events.onClick SignOut ] 
                         [ i [ Attributes.class "fas fa-user" ] []
                         , text "My Profile" 
@@ -211,6 +239,23 @@ viewPosition position =
             , p [] [ text <| (toString position.totalUnits) ++ " shares" ]
             ]
         ]
+    
+viewStockList model =
+    div []
+        [ form []
+            [ input 
+                [ Attributes.type_ "text"
+                , Attributes.placeholder "Type to search"
+                , Events.onInput TypeSearch 
+                ] []
+            ]
+        , table []
+            (List.map viewStockListItem model.stocks)
+        ]
+        
+viewStockListItem stock =
+    tr []
+        [ td [] [ text stock.symbol ] ]
     
 viewSignIn model =
     div [] 
@@ -268,6 +313,9 @@ view model =
                     
                     Route.Protected (Route.StockPosition id) ->
                         viewStockPosition model
+                    
+                    Route.Protected Route.StockList ->
+                        viewStockList model
                     
                     Route.Public Route.SignIn ->
                         viewSignIn model

@@ -48,7 +48,7 @@ stockDecoder =
     Decode.map3 Stock 
         (Decode.field "symbol" Decode.string)
         (Decode.field "name" Decode.string)
-        (Decode.field "last_price" Decode.float)
+        (Decode.field "last_price" (Decode.oneOf [Decode.float, Decode.null 0]))
 
 userDecoder =
     Decode.map User
@@ -62,6 +62,9 @@ getPositions token =
 
 getStock token id =
     get ("/stocks/" ++ (toString id)) token stockDecoder
+
+getStocks token search =
+    get ("/stocks?search=" ++ search) token (Decode.list stockDecoder)
 
 getUser token = 
     get "/users/me" token userDecoder

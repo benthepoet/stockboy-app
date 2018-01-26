@@ -5,6 +5,7 @@ import UrlParser exposing ((</>), int, map, oneOf, parseHash, s)
 type ProtectedRoute
     = MyPositions
     | StockPosition Int
+    | StockList
     
 type PublicRoute
     = NotFound
@@ -21,6 +22,9 @@ toPath route =
     
         Protected (StockPosition id) ->
             "#/stockposition/" ++ (toString id)
+            
+        Protected StockList ->
+            "#/stocks"
     
         Public SignIn ->
             "#/signin"
@@ -38,5 +42,6 @@ route =
     oneOf
         [ map (Protected MyPositions) (s "")
         , map (Protected << StockPosition) (s "stockposition" </> int)
+        , map (Protected StockList) (s "stocks")
         , map (Public SignIn) (s "signin")
         ]
