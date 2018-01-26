@@ -42,6 +42,7 @@ type Msg
     | TypeEmail String
     | TypePassword String
     | TypeSearch String
+    | ViewStock Int
     
 -- PROGRAM
     
@@ -168,6 +169,11 @@ update msg model =
             ( model
             , Http.send LoadStocks (Request.getStocks (Maybe.withDefault "" model.token) search)
             )
+            
+        ViewStock id ->
+            ( model
+            , Navigation.newUrl (Route.toPath <| Route.Protected (Route.StockPosition id))
+            )
 
 subscriptions model = 
     Time.every model.pollInterval Poll
@@ -206,6 +212,12 @@ viewNav model =
                     [ a 
                         [ Attributes.class "button"
                         , Events.onClick Search ] 
+                        [ i [ Attributes.class "fas fa-home" ] []
+                        , text "My Portfolio" 
+                        ]
+                    , a 
+                        [ Attributes.class "button"
+                        , Events.onClick Search ] 
                         [ i [ Attributes.class "fas fa-search" ] []
                         , text "Search" 
                         ]
@@ -228,7 +240,7 @@ viewNotFound model =
     div [] [ text "Not Found" ]
     
 viewPosition position =
-    article [ Attributes.class "card shadow position" ]
+    article [ Attributes.class "card shadow position", Events.onClick (ViewStock position.stock.id) ]
         [ section [ Attributes.class "padding" ]
             [ h1 []
                 [ span 
@@ -239,7 +251,7 @@ viewPosition position =
             , p [] [ text <| (toString position.totalUnits) ++ " shares" ]
             ]
         ]
-    
+
 viewStockList model =
     div []
         [ form []

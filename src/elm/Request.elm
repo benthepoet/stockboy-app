@@ -16,7 +16,8 @@ type alias PositionResponse =
     }
     
 type alias Stock = 
-    { symbol: String
+    { id: Int
+    , symbol: String
     , name: String
     , lastPrice: Float
     }
@@ -45,7 +46,8 @@ positionDecoder =
         (Decode.field "stock" stockDecoder)
 
 stockDecoder =
-    Decode.map3 Stock 
+    Decode.map4 Stock 
+        (Decode.field "id" Decode.int)
         (Decode.field "symbol" Decode.string)
         (Decode.field "name" Decode.string)
         (Decode.field "last_price" (Decode.oneOf [Decode.float, Decode.null 0]))
