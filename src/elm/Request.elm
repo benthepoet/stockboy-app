@@ -60,21 +60,21 @@ authenticate email password =
     Http.post (apiUrl "/auth") (Http.jsonBody (authEncoder email password)) authDecoder  
     
 getPositions token = 
-    get "/positions" token (Decode.list positionDecoder)
+    get "positions" token (Decode.list positionDecoder)
 
 getStock token id =
-    get ("/stocks/" ++ (toString id)) token stockDecoder
+    get ("stocks/" ++ (toString id)) token stockDecoder
 
 getStocks token search =
-    get ("/stocks?search=" ++ search) token (Decode.list stockDecoder)
+    get ("stocks?search=" ++ search) token (Decode.list stockDecoder)
 
 getUser token = 
-    get "/users/me" token userDecoder
+    get "users/me" token userDecoder
         
 get path token decoder =
     Http.request
         { method = "GET"
-        , url = apiUrl path
+        , url = apiUrl ++ "/" ++ path
         , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
