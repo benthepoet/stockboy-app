@@ -2,7 +2,7 @@ module Main exposing (..)
 
 -- IMPORTS
 
-import Html exposing (Html, a, article, button, div, form, h1, h4, header, i, input, nav, p, section, span, text)
+import Html exposing (Html, a, article, button, div, form, h1, h4, header, i, input, label, nav, p, section, span, text)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Http
@@ -178,7 +178,9 @@ viewNav model =
             div [] []
         Just token ->
             nav [] 
-                [ div [ Attributes.class "menu" ]
+                [ input [ Attributes.id "bmenub", Attributes.type_ "checkbox", Attributes.class "show" ] []
+                , label [ Attributes.for "bmenub", Attributes.class "button burger" ] [ text "menu" ]
+                , div [ Attributes.class "menu" ]
                     [ a 
                         [ Attributes.class "button"
                         , Events.onClick SignOut ] 
@@ -235,11 +237,13 @@ viewSignIn model =
             ]
         , div [] 
             [ p [] [ text "Not a member?" ]
-            , input 
+            , button 
                 [ Attributes.class "button" 
                 , Attributes.type_ "button"
-                , Attributes.value "Create Account"
-                ] []
+                ] 
+                [ i [ Attributes.class "fas fa-user-plus" ] []
+                , text "Create Account" 
+                ]
             ]
         ]
 
