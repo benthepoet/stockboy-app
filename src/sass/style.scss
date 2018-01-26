@@ -12,6 +12,11 @@ body {
         background-color: #0074d9;
     }
     
+    .button > svg,
+    button > svg {
+        margin-right: 8px;
+    }
+    
     .shadow {
         box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.05);
     }

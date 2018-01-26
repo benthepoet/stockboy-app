@@ -2,7 +2,7 @@ module Main exposing (..)
 
 -- IMPORTS
 
-import Html exposing (Html, article, button, div, form, h1, h4, header, i, input, nav, p, section, span, text)
+import Html exposing (Html, a, article, button, div, form, h1, h4, header, i, input, nav, p, section, span, text)
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Http
@@ -152,10 +152,7 @@ subscriptions model =
 
 viewMyPositions model =
     div [ Attributes.class "row" ] 
-        [ button 
-            [ Attributes.type_ "button"
-            , Events.onClick SignOut ] [ text "Sign Out" ]
-        , article [ Attributes.class "card shadow my-account" ]
+        [ article [ Attributes.class "card shadow my-account" ]
             [ header [] [ text "My Account" ]
             , section [ Attributes.class "padding" ]
                 [ p [] 
@@ -176,7 +173,26 @@ viewMyPositions model =
         ]
     
 viewNav model =
-    nav [] []
+    case model.token of
+        Nothing ->
+            div [] []
+        Just token ->
+            nav [] 
+                [ div [ Attributes.class "menu" ]
+                    [ a 
+                        [ Attributes.class "button"
+                        , Events.onClick SignOut ] 
+                        [ i [ Attributes.class "fas fa-user" ] []
+                        , text "My Profile" 
+                        ]
+                    , a 
+                        [ Attributes.class "button"
+                        , Events.onClick SignOut ] 
+                        [ i [ Attributes.class "fas fa-sign-out-alt" ] []
+                        , text "Sign Out" 
+                        ] 
+                    ]
+                ]
 
 viewNotFound model =
     div [] [ text "Not Found" ]
@@ -213,7 +229,7 @@ viewSignIn model =
                 [ Attributes.class "stack"
                 , Attributes.type_ "submit"
                 ] 
-                [ i [ Attributes.class "fa fa-sign-in" ] [] 
+                [ i [ Attributes.class "fas fa-sign-in-alt" ] [] 
                 , text "Sign In" 
                 ]
             ]
