@@ -27,7 +27,7 @@ type alias User =
     }
 
 apiUrl path =
-    "https://api.stockboy.us" ++ path
+    "https://api.stockboy.us/" ++ path
 
 authDecoder = 
     Decode.map AuthResponse (Decode.field "token" Decode.string)
@@ -57,7 +57,7 @@ userDecoder =
         (Decode.field "balance" Decode.float)
 
 authenticate email password =
-    Http.post (apiUrl "/auth") (Http.jsonBody (authEncoder email password)) authDecoder  
+    Http.post (apiUrl "auth") (Http.jsonBody (authEncoder email password)) authDecoder  
     
 getPositions token = 
     get "positions" token (Decode.list positionDecoder)
@@ -74,7 +74,7 @@ getUser token =
 get path token decoder =
     Http.request
         { method = "GET"
-        , url = apiUrl ++ "/" ++ path
+        , url = apiUrl path
         , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
