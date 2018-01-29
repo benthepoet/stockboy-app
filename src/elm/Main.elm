@@ -302,16 +302,22 @@ viewPosition position =
         ]
 
 viewStockList model =
-    div []
-        [ form []
-            [ input 
-                [ Attributes.type_ "text"
-                , Attributes.placeholder "Type to search"
-                , Events.onInput TypeSearch 
-                ] []
+    div [ Attributes.class "row" ]
+        [ article [ Attributes.class "card" ]
+            [ header []
+                [ form []
+                    [ input 
+                        [ Attributes.type_ "text"
+                        , Attributes.placeholder "Type to search"
+                        , Events.onInput TypeSearch 
+                        ] []
+                    ]
+                ]
+            , section [ Attributes.class "no-padding" ]
+                [ table []
+                    (List.map viewStockListItem model.stocks)
+                ]
             ]
-        , table []
-            (List.map viewStockListItem model.stocks)
         ]
         
 viewStockListItem stock =

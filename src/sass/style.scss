@@ -27,8 +27,20 @@ body {
             background-color: #eeffea;
         }
         
+        section.no-padding {
+            padding: 0;
+        }
+        
         section.padding {
             padding-bottom: 0.6em;
+        }
+        
+        section {
+            
+            table {
+                width: 100%;
+            }
+            
         }
         
         span.float {
