@@ -1,21 +1,21 @@
 require('./sass/style.scss');
 const Elm = require('./elm/Main.elm');
 
-const TOKEN_KEY = 'token';
+const FLAGS = {
+    token: getItem('token')
+};
 
-const node = document.querySelector('#main');
-const app = Elm.Main.embed(node, { token: getToken() });
+const app = Elm.Main.fullscreen(FLAGS);
+app.ports.syncToken.subscribe(setItem.bind(null, 'token'));
 
-app.ports.syncToken.subscribe(setToken);
-
-function getToken() {
-    return sessionStorage.getItem(TOKEN_KEY);
+function getItem(key) {
+    return sessionStorage.getItem(key);
 }
 
-function setToken(value) {
+function setItem(key, value) {
     if (!value) {
-        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(key);
     } else {
-        sessionStorage.setItem(TOKEN_KEY, value);
+        sessionStorage.setItem(key, value);
     }
 }
