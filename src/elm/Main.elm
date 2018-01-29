@@ -322,7 +322,11 @@ viewStockList model =
         
 viewStockListItem stock =
     tr []
-        [ td [] [ text stock.symbol ] ]
+        [ td [] 
+            [ h4 [ Attributes.class "no-padding" ] [ text stock.symbol ] 
+            , text stock.name
+            ] 
+        ]
     
 viewSignIn model =
     div [] 
