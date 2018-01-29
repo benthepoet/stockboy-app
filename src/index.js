@@ -1,12 +1,8 @@
 require('./sass/style.scss');
 const Elm = require('./elm/Main.elm');
 
-const FLAGS = {
-    token: getItem('token')
-};
-
-const app = Elm.Main.fullscreen(FLAGS);
-app.ports.syncToken.subscribe(setItem.bind(null, 'token'));
+const { ports } = Elm.Main.fullscreen({ token: getItem('token') });
+ports.syncToken.subscribe(setItem.bind(null, 'token'));
 
 function getItem(key) {
     return sessionStorage.getItem(key);
