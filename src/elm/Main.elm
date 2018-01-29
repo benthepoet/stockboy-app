@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 -- IMPORTS
 
@@ -14,6 +14,10 @@ import Time
 import Util
 
 -- TYPES
+
+type alias Flags =
+    { token: Maybe String
+    }
 
 type alias Model = 
     { balance: Float
@@ -47,14 +51,19 @@ type Msg
     | TypeSearch String
     | ViewStock Int
     
--- PROGRAM
+-- PORTS
+
+port syncToken : Maybe String -> Cmd msg
     
-init location =
+-- PROGRAM
+
+init: Flags -> Navigation.Location -> (Model, Cmd Msg)
+init flags location =
     let
         pollInterval = 10 * 1000
         route = Route.parse location
     in
-        ( Model 0 "" 0 False "" pollInterval [] route Nothing [] Nothing
+        ( Model 0 "" 0 False "" pollInterval [] route Nothing [] flags.token
         , Task.perform RouteChange (Task.succeed route))
 
 calculateEquity positions =
@@ -111,6 +120,7 @@ update msg model =
             , Cmd.batch 
                 [ Navigation.newUrl (Route.toPath <| Route.Protected Route.MyPositions)
                 , Task.perform Poll Time.now
+                , syncToken (Just authResponse.token)
                 ]
             )        
         
@@ -170,7 +180,10 @@ update msg model =
         
         SignOut ->
             ( { model | token = Nothing } 
-            , Navigation.newUrl (Route.toPath <| Route.Public Route.SignIn)
+            , Cmd.batch 
+                [ Navigation.newUrl (Route.toPath <| Route.Public Route.SignIn)
+                , syncToken Nothing
+                ]
             )
         
         SubmitCredentials ->
@@ -321,7 +334,7 @@ viewStockList model =
         ]
         
 viewStockListItem stock =
-    tr []
+    tr [ Events.onClick (ViewStock stock.id) ]
         [ td [] 
             [ h4 [ Attributes.class "no-padding" ] [ text stock.symbol ] 
             , text stock.name
@@ -400,7 +413,7 @@ view model =
         ]
 
 main 
-    = Navigation.program (Route.parse >> RouteChange)
+    = Navigation.programWithFlags (Route.parse >> RouteChange)
         { init = init
         , update = update
         , subscriptions = subscriptions
