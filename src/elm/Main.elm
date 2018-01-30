@@ -9,6 +9,7 @@ import Http
 import Navigation
 import Request
 import Route
+import Storage
 import Task
 import Time
 import Util
@@ -50,10 +51,6 @@ type Msg
     | TypePassword String
     | TypeSearch String
     | ViewStock Int
-    
--- PORTS
-
-port syncToken : Maybe String -> Cmd msg
     
 -- PROGRAM
 
@@ -124,7 +121,7 @@ update msg model =
             , Cmd.batch 
                 [ Navigation.newUrl (Route.toPath <| Route.Protected Route.MyPositions)
                 , Task.perform RefreshData Time.now
-                , syncToken <| Just authResponse.token
+                , Storage.syncToken <| Just authResponse.token
                 ]
             )        
         
@@ -186,7 +183,7 @@ update msg model =
             ( { model | token = Nothing } 
             , Cmd.batch 
                 [ Navigation.newUrl (Route.toPath <| Route.Public Route.SignIn)
-                , syncToken Nothing
+                , Storage.syncToken Nothing
                 ]
             )
         
