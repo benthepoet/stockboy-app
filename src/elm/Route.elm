@@ -2,41 +2,47 @@ module Route exposing (..)
 
 import UrlParser exposing ((</>), int, map, oneOf, parseHash, s)
 
+
 type ProtectedRoute
     = MyPositions
     | StockPosition Int
     | StockList
-    
+
+
 type PublicRoute
     = NotFound
     | SignIn
 
+
 type Route
-    = Protected ProtectedRoute 
+    = Protected ProtectedRoute
     | Public PublicRoute
+
 
 toPath route =
     case route of
         Protected MyPositions ->
             "#/"
-    
+
         Protected (StockPosition id) ->
             "#/stockposition/" ++ (toString id)
-            
+
         Protected StockList ->
             "#/stocks"
-    
+
         Public SignIn ->
             "#/signin"
-            
+
         Public NotFound ->
             "#/notfound"
+
 
 parse location =
     if String.isEmpty location.hash then
         Protected MyPositions
-    else 
+    else
         Maybe.withDefault (Public NotFound) (parseHash route location)
+
 
 route =
     oneOf
