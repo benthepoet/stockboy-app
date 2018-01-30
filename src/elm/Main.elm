@@ -116,14 +116,17 @@ update msg model =
             , Cmd.none 
             )
         
-        LoadToken (Ok authResponse) ->
-            ( { model | token = Just authResponse.token }
-            , Cmd.batch 
-                [ Navigation.newUrl (Route.toPath <| Route.Protected Route.MyPositions)
-                , Task.perform RefreshData Time.now
-                , Storage.syncToken <| Just authResponse.token
-                ]
-            )        
+        LoadToken (Ok response) ->
+            let
+                token = Just response.token
+            in
+                ( { model | token = token }
+                , Cmd.batch 
+                    [ Navigation.newUrl (Route.toPath <| Route.Protected Route.MyPositions)
+                    , Task.perform RefreshData Time.now
+                    , Storage.syncToken token
+                    ]
+                )        
         
         LoadToken (Err _) ->
             ( { model | error = True }
@@ -180,12 +183,15 @@ update msg model =
             )
         
         SignOut ->
-            ( { model | token = Nothing } 
-            , Cmd.batch 
-                [ Navigation.newUrl (Route.toPath <| Route.Public Route.SignIn)
-                , Storage.syncToken Nothing
-                ]
-            )
+            let
+                token = Nothing
+            in
+                ( { model | token = token } 
+                , Cmd.batch 
+                    [ Navigation.newUrl (Route.toPath <| Route.Public Route.SignIn)
+                    , Storage.syncToken token
+                    ]
+                )
         
         SubmitCredentials ->
             ( model
