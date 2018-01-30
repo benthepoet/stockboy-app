@@ -1,11 +1,20 @@
+// Import modules
+var config = require('./config'),
+    Elm = require('./elm/Main.elm');
+    
+// Import SASS
 require('./sass/style.scss');
-const Elm = require('./elm/Main.elm');
 
-const TOKEN_KEY = 'token';
+// Set flags
+var flags = {
+    token: getItem(config.STORAGE.TOKEN)
+};
 
-const app = Elm.Main.fullscreen({ token: getItem(TOKEN_KEY) });
+// Run the application
+var app = Elm.Main.fullscreen(flags);
 
-app.ports.syncToken.subscribe(setItem.bind(null, TOKEN_KEY));
+// Set subscriptions
+app.ports.syncToken.subscribe(setItem.bind(null, config.STORAGE.TOKEN));
 
 function getItem(key) {
     return sessionStorage.getItem(key);

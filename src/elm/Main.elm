@@ -25,8 +25,8 @@ type alias Model =
     , equity: Float
     , error: Bool
     , password: String
-    , pollInterval: Time.Time
     , positions: List Request.PositionResponse
+    , refreshInterval: Time.Time
     , route: Route.Route
     , stock: Maybe Request.Stock
     , stocks: List Request.Stock
@@ -41,7 +41,7 @@ type Msg
     | LoadStocks (Result Http.Error (List Request.Stock))
     | LoadToken (Result Http.Error Request.AuthResponse)
     | LoadUser (Result Http.Error Request.User)
-    | Poll Time.Time
+    | RefreshData Time.Time
     | RouteChange Route.Route
     | Search
     | SignOut
@@ -60,13 +60,13 @@ port syncToken : Maybe String -> Cmd msg
 init: Flags -> Navigation.Location -> (Model, Cmd Msg)
 init flags location =
     let
-        pollInterval = 10 * 1000
+        refreshInterval = 10 * 1000
         route = Route.parse location
     in
-        ( Model 0 "" 0 False "" pollInterval [] route Nothing [] flags.token
+        ( Model 0 "" 0 False "" [] refreshInterval route Nothing [] flags.token
         , Cmd.batch
             [ Task.perform RouteChange (Task.succeed route)
-            , Task.perform Poll Time.now      
+            , Task.perform RefreshData Time.now      
             ]
         )
 
@@ -123,7 +123,7 @@ update msg model =
             ( { model | token = Just authResponse.token }
             , Cmd.batch 
                 [ Navigation.newUrl (Route.toPath <| Route.Protected Route.MyPositions)
-                , Task.perform Poll Time.now
+                , Task.perform RefreshData Time.now
                 , syncToken <| Just authResponse.token
                 ]
             )        
@@ -143,7 +143,7 @@ update msg model =
             , Cmd.none 
             )
             
-        Poll time ->
+        RefreshData time ->
             case model.token of
                 Just token ->
                     ( model
@@ -216,7 +216,7 @@ update msg model =
             )
 
 subscriptions model = 
-    Time.every model.pollInterval Poll
+    Time.every model.refreshInterval RefreshData
 
 viewError model =
     div [ Attributes.class "modal" ]
