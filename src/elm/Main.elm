@@ -64,7 +64,15 @@ init flags location =
         route = Route.parse location
     in
         ( Model 0 "" 0 False "" pollInterval [] route Nothing [] flags.token
-        , Task.perform RouteChange (Task.succeed route))
+        , Cmd.batch
+            [ Task.perform RouteChange (Task.succeed route)
+            , case flags.token of
+                Nothing ->
+                    Cmd.none
+                Just token ->
+                    Task.perform Poll Time.now
+            ]
+        )
 
 calculateEquity positions =
     positions
@@ -120,7 +128,7 @@ update msg model =
             , Cmd.batch 
                 [ Navigation.newUrl (Route.toPath <| Route.Protected Route.MyPositions)
                 , Task.perform Poll Time.now
-                , syncToken (Just authResponse.token)
+                , syncToken <| Just authResponse.token
                 ]
             )        
         
