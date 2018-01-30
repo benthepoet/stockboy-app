@@ -66,11 +66,7 @@ init flags location =
         ( Model 0 "" 0 False "" pollInterval [] route Nothing [] flags.token
         , Cmd.batch
             [ Task.perform RouteChange (Task.succeed route)
-            , case flags.token of
-                Nothing ->
-                    Cmd.none
-                Just token ->
-                    Task.perform Poll Time.now
+            , Task.perform Poll Time.now      
             ]
         )
 
