@@ -307,34 +307,10 @@ viewNav model =
                     [ i [ Attributes.class "fas fa-bars" ] []
                     ]
                 , div [ Attributes.class "menu" ]
-                    [ a
-                        [ Attributes.class "button"
-                        , Events.onClick Home
-                        ]
-                        [ i [ Attributes.class "fas fa-home" ] []
-                        , text "My Portfolio"
-                        ]
-                    , a
-                        [ Attributes.class "button"
-                        , Events.onClick Search
-                        ]
-                        [ i [ Attributes.class "fas fa-search" ] []
-                        , text "Search"
-                        ]
-                    , a
-                        [ Attributes.class "button"
-                        , Events.onClick SignOut
-                        ]
-                        [ i [ Attributes.class "fas fa-user" ] []
-                        , text "My Profile"
-                        ]
-                    , a
-                        [ Attributes.class "button"
-                        , Events.onClick SignOut
-                        ]
-                        [ i [ Attributes.class "fas fa-sign-out-alt" ] []
-                        , text "Sign Out"
-                        ]
+                    [ Widgets.menuButton "My Portfolio" "home" Home
+                    , Widgets.menuButton "Search" "search" Search
+                    , Widgets.menuButton "My Profile" "user" SignOut
+                    , Widgets.menuButton "Sign Out" "sign-out-alt" SignOut
                     ]
                 ]
 
