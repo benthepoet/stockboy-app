@@ -1,7 +1,7 @@
-module Util exposing (toFixed)
+module Util exposing (..)
 
-import Array
-
+formatCurrency value =
+    "$" ++ (toFixed 2 value)
 
 toFixed places value =
     let

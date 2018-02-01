@@ -13,6 +13,7 @@ import Storage
 import Task
 import Time
 import Util
+import Widgets
 
 
 -- TYPES
@@ -285,18 +286,9 @@ viewMyPositions model =
         [ article [ Attributes.class "card shadow my-account" ]
             [ header [] [ text "My Account" ]
             , section [ Attributes.class "padding" ]
-                [ p []
-                    [ text "Equity Balance"
-                    , span [ Attributes.class "float" ] [ text <| "$" ++ (Util.toFixed 2 model.equity) ]
-                    ]
-                , p []
-                    [ text "Cash Balance"
-                    , span [ Attributes.class "float" ] [ text <| "$" ++ (Util.toFixed 2 model.balance) ]
-                    ]
-                , p []
-                    [ text "Account Value"
-                    , span [ Attributes.class "float" ] [ text <| "$" ++ (Util.toFixed 2 (model.equity + model.balance)) ]
-                    ]
+                [ Widgets.staticField "Equity Balance" (Util.formatCurrency model.equity)
+                , Widgets.staticField "Cash Balance" (Util.formatCurrency model.balance)
+                , Widgets.staticField "Account Value" (Util.formatCurrency (model.equity + model.balance))
                 ]
             ]
         , div [] <| List.map viewPosition model.positions
@@ -311,7 +303,9 @@ viewNav model =
         Just token ->
             nav []
                 [ input [ Attributes.id "bmenub", Attributes.type_ "checkbox", Attributes.class "show" ] []
-                , label [ Attributes.for "bmenub", Attributes.class "button burger" ] [ text "menu" ]
+                , label [ Attributes.for "bmenub", Attributes.class "button burger" ] 
+                    [ i [ Attributes.class "fas fa-bars" ] []
+                    ]
                 , div [ Attributes.class "menu" ]
                     [ a
                         [ Attributes.class "button"
