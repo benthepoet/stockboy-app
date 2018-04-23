@@ -79,15 +79,12 @@ init flags location =
         )
 
 
-calculateEquity positions =
-    positions
-        |> List.map (\n -> (toFloat n.totalUnits) * n.stock.lastPrice)
-        |> List.sum
+calculateEquity =
+    List.sum << (List.map (\n -> (toFloat n.totalUnits) * n.stock.lastPrice))
 
 
-findPosition positions stock =
-    List.filter (\l -> l.stock.id == stock.id) positions
-        |> List.head
+findPosition stock =
+    List.head << (List.filter (\l -> l.stock.id == stock.id))
 
 
 forceRefresh =
@@ -410,7 +407,7 @@ viewStockPosition model =
             Just stock ->
                 let
                     position =
-                        findPosition model.positions stock
+                        findPosition stock model.positions
                 in
                     [ div [ Attributes.class "card shadow" ]
                         [ header []
