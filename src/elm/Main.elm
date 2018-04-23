@@ -83,8 +83,8 @@ calculateEquity =
     List.sum << (List.map (\n -> (toFloat n.totalUnits) * n.stock.lastPrice))
 
 
-findPosition stock =
-    List.head << (List.filter (\l -> l.stock.id == stock.id))
+findPosition id =
+    List.head << (List.filter ((==) id << .id << .stock))
 
 
 forceRefresh =
@@ -407,7 +407,7 @@ viewStockPosition model =
             Just stock ->
                 let
                     position =
-                        findPosition stock model.positions
+                        findPosition stock.id model.positions
                 in
                     [ div [ Attributes.class "card shadow" ]
                         [ header []
