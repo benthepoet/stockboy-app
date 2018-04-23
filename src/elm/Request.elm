@@ -31,8 +31,8 @@ type alias User =
     }
 
 
-apiUrl path =
-    "https://api.stockboy.us/" ++ path
+apiUrl =
+    (++) "https://api.stockboy.us/"
 
 
 authDecoder =

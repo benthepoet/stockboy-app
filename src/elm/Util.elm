@@ -1,7 +1,7 @@
 module Util exposing (..)
 
-formatCurrency value =
-    "$" ++ (toFixed 2 value)
+formatCurrency =
+    (++) "$" << (toFixed 2)
 
 toFixed places value =
     let
