@@ -448,8 +448,8 @@ viewSignUp model =
         ]
 
 viewStockPosition model =
-    div [ Attributes.class "row" ]
-        (case model.stock of
+    div [ Attributes.class "row" ] <|
+        case model.stock of
             Nothing ->
                 []
 
@@ -473,7 +473,6 @@ viewStockPosition model =
                             )
                         ]
                     ]
-        )
 
 
 view model =
