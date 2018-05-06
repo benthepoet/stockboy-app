@@ -12,6 +12,7 @@ type ProtectedRoute
 type PublicRoute
     = NotFound
     | SignIn
+    | SignUp
 
 
 type Route
@@ -25,16 +26,19 @@ toPath route =
             "#/"
 
         Protected (StockPosition id) ->
-            "#/stockposition/" ++ (toString id)
+            "#/stock-position/" ++ (toString id)
 
         Protected StockList ->
             "#/stocks"
 
         Public SignIn ->
-            "#/signin"
+            "#/sign-in"
+
+        Public SignUp ->
+            "#/sign-up"
 
         Public NotFound ->
-            "#/notfound"
+            "#/not-found"
 
 
 parse location =
@@ -47,7 +51,8 @@ parse location =
 route =
     oneOf
         [ map (Protected MyPositions) (s "")
-        , map (Protected << StockPosition) (s "stockposition" </> int)
+        , map (Protected << StockPosition) (s "stock-position" </> int)
         , map (Protected StockList) (s "stocks")
-        , map (Public SignIn) (s "signin")
+        , map (Public SignIn) (s "sign-in")
+        , map (Public SignUp) (s "sign-up")
         ]

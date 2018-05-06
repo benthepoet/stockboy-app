@@ -26,6 +26,7 @@ type alias Flags =
 
 type alias Model =
     { balance : Float
+    , confirmPassword : String
     , email : String
     , equity : Float
     , error : Bool
@@ -51,7 +52,9 @@ type Msg
     | RouteChange Route.Route
     | Search
     | SignOut
+    | SignUp
     | SubmitCredentials
+    | TypeConfirmPassword String
     | TypeEmail String
     | TypePassword String
     | TypeSearch String
@@ -71,7 +74,7 @@ init flags location =
         route =
             Route.parse location
     in
-        ( Model 0 "" 0 False "" [] refreshInterval route Nothing [] flags.token
+        ( Model 0 "" "" 0 False "" [] refreshInterval route Nothing [] flags.token
         , Cmd.batch
             [ Task.perform RouteChange (Task.succeed route)
             , forceRefresh
@@ -84,7 +87,7 @@ calculateEquity =
 
 
 findPosition id =
-    List.head << (List.filter ((==) id << .id << .stock))
+    List.head << (List.filter ((==)  id << .id << .stock))
 
 
 forceRefresh =
@@ -217,10 +220,20 @@ update msg model =
                     , Storage.syncToken token
                     ]
                 )
+                
+        SignUp ->
+            ( model
+            , Navigation.newUrl (Route.toPath <| Route.Public Route.SignUp)
+            )
 
         SubmitCredentials ->
             ( model
             , Http.send LoadToken (Request.authenticate model.email model.password)
+            )
+
+        TypeConfirmPassword password ->
+            ( { model | confirmPassword = password }
+            , Cmd.none
             )
 
         TypeEmail email ->
@@ -362,7 +375,8 @@ viewStockListItem stock =
 
 viewSignIn model =
     div []
-        [ form [ Events.onSubmit SubmitCredentials ]
+        [ h3 [] [ text "Sign In" ]
+        , form [ Events.onSubmit SubmitCredentials ]
             [ input
                 [ Attributes.class "stack"
                 , Attributes.placeholder "Email"
@@ -390,13 +404,48 @@ viewSignIn model =
             , button
                 [ Attributes.class "button"
                 , Attributes.type_ "button"
+                , Events.onClick SignUp
+                ]
+                [ i [ Attributes.class "fas fa-user-plus" ] []
+                , text "Sign Up"
+                ]
+            ]
+        ]
+
+viewSignUp model =
+    div [] 
+        [ h3 [] [ text "Create Account" ]
+        , form [] 
+            [ input
+                [ Attributes.class "stack"
+                , Attributes.placeholder "Email"
+                , Attributes.type_ "text"
+                , Events.onInput TypeEmail
+                ]
+                []
+            , input
+                [ Attributes.class "stack"
+                , Attributes.placeholder "Password"
+                , Attributes.type_ "password"
+                , Events.onInput TypePassword
+                ]
+                []
+            , input
+                [ Attributes.class "stack"
+                , Attributes.placeholder "Confirm Password"
+                , Attributes.type_ "password"
+                , Events.onInput TypeConfirmPassword
+                ]
+                []
+            , button
+                [ Attributes.class "stack"
+                , Attributes.type_ "submit"
                 ]
                 [ i [ Attributes.class "fas fa-user-plus" ] []
                 , text "Create Account"
                 ]
             ]
         ]
-
 
 viewStockPosition model =
     div [ Attributes.class "row" ]
@@ -445,6 +494,9 @@ view model =
 
                     Route.Public Route.SignIn ->
                         viewSignIn model
+                        
+                    Route.Public Route.SignUp ->
+                        viewSignUp model
 
                     Route.Public Route.NotFound ->
                         viewNotFound model
