@@ -53,7 +53,8 @@ type Msg
     | Search
     | SignOut
     | SignUp
-    | SubmitCredentials
+    | SubmitSignIn
+    | SubmitSignUp
     | TypeConfirmPassword String
     | TypeEmail String
     | TypePassword String
@@ -226,9 +227,14 @@ update msg model =
             , Navigation.newUrl (Route.toPath <| Route.Public Route.SignUp)
             )
 
-        SubmitCredentials ->
+        SubmitSignIn ->
             ( model
-            , Http.send LoadToken (Request.authenticate model.email model.password)
+            , Http.send LoadToken <| Request.authenticate model.email model.password
+            )
+
+        SubmitSignUp ->
+            ( model
+            , Http.send LoadToken <| Request.signUp model.email model.password
             )
 
         TypeConfirmPassword password ->
@@ -317,8 +323,8 @@ viewNav model =
                     [ i [ Attributes.class "fas fa-bars" ] []
                     ]
                 , div [ Attributes.class "menu" ]
-                    [ Widgets.menuButton "My Portfolio" "home" Home
-                    , Widgets.menuButton "Search" "search" Search
+                    [ Widgets.menuButton "Search" "search" Search
+                    , Widgets.menuButton "My Portfolio" "home" Home
                     , Widgets.menuButton "My Profile" "user" SignOut
                     , Widgets.menuButton "Sign Out" "sign-out-alt" SignOut
                     ]
@@ -376,7 +382,7 @@ viewStockListItem stock =
 viewSignIn model =
     div []
         [ h3 [] [ text "Sign In" ]
-        , form [ Events.onSubmit SubmitCredentials ]
+        , form [ Events.onSubmit SubmitSignIn ]
             [ input
                 [ Attributes.class "stack"
                 , Attributes.placeholder "Email"
@@ -415,7 +421,7 @@ viewSignIn model =
 viewSignUp model =
     div [] 
         [ h3 [] [ text "Create Account" ]
-        , form [] 
+        , form [ Events.onSubmit SubmitSignUp ] 
             [ input
                 [ Attributes.class "stack"
                 , Attributes.placeholder "Email"

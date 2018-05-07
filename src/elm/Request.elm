@@ -36,7 +36,7 @@ apiUrl =
 
 
 authDecoder =
-    Decode.map AuthResponse (Decode.field "token" Decode.string)
+    Decode.map AuthResponse <| Decode.field "token" Decode.string
 
 
 authEncoder email password =
@@ -68,11 +68,11 @@ userDecoder =
 
 
 authenticate email password =
-    Http.post (apiUrl "auth") (Http.jsonBody (authEncoder email password)) authDecoder
+    Http.post (apiUrl "auth") (Http.jsonBody <| authEncoder email password) authDecoder
 
 
 getPositions token =
-    get "positions" token (Decode.list positionDecoder)
+    get "positions" token <| Decode.list positionDecoder
 
 
 getStock token id =
@@ -80,11 +80,15 @@ getStock token id =
 
 
 getStocks token search =
-    get ("stocks?search=" ++ search) token (Decode.list stockDecoder)
+    get ("stocks?search=" ++ search) token <| Decode.list stockDecoder
 
 
 getUser token =
     get "users/me" token userDecoder
+
+
+signUp email password =
+    Http.post (apiUrl "auth/signup") (Http.jsonBody <| authEncoder email password) authDecoder
 
 
 get path token decoder =
