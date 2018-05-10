@@ -10,7 +10,12 @@ toFixed : Int -> Float -> String
 toFixed places value =
     let
         stringValue =
-            String.padLeft (places + 1) '0' << toString << round <| (*) value <| (^) 10 <| toFloat places
+            String.padLeft (places + 1) '0' 
+                <| toString 
+                <| round 
+                <| (*) value 
+                <| (^) 10 
+                <| toFloat places
 
         valueLength =
             String.length stringValue
