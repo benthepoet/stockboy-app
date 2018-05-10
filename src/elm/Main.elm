@@ -88,7 +88,7 @@ calculateEquity =
 
 
 findPosition id =
-    List.head << (List.filter ((==)  id << .id << .stock))
+    List.head << (List.filter ((==) id << .id << .stock))
 
 
 forceRefresh =
@@ -221,7 +221,7 @@ update msg model =
                     , Storage.syncToken token
                     ]
                 )
-                
+
         SignUp ->
             ( model
             , Navigation.newUrl (Route.toPath <| Route.Public Route.SignUp)
@@ -319,7 +319,7 @@ viewNav model =
         Just token ->
             nav []
                 [ input [ Attributes.id "bmenub", Attributes.type_ "checkbox", Attributes.class "show" ] []
-                , label [ Attributes.for "bmenub", Attributes.class "button burger" ] 
+                , label [ Attributes.for "bmenub", Attributes.class "button burger" ]
                     [ i [ Attributes.class "fas fa-bars" ] []
                     ]
                 , div [ Attributes.class "menu" ]
@@ -418,10 +418,11 @@ viewSignIn model =
             ]
         ]
 
+
 viewSignUp model =
-    div [] 
+    div []
         [ h3 [] [ text "Create Account" ]
-        , form [ Events.onSubmit SubmitSignUp ] 
+        , form [ Events.onSubmit SubmitSignUp ]
             [ input
                 [ Attributes.class "stack"
                 , Attributes.placeholder "Email"
@@ -452,6 +453,7 @@ viewSignUp model =
                 ]
             ]
         ]
+
 
 viewStockPosition model =
     div [ Attributes.class "row" ] <|
@@ -499,7 +501,7 @@ view model =
 
                     Route.Public Route.SignIn ->
                         viewSignIn model
-                        
+
                     Route.Public Route.SignUp ->
                         viewSignUp model
 
