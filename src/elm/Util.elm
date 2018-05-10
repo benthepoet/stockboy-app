@@ -3,16 +3,9 @@ module Util exposing (..)
 formatCurrency =
     (++) "$" << (toFixed 2)
 
-toFixed places value =
+toFixed places value = 
     let
-        parts =
-            String.split "." (toString <| (toFloat (round <| value * 10 ^ places) / 10 ^ places))
+        stringValue = String.padLeft (places + 1) '0' << toString << round <| (*) value <| (^) 10 <| toFloat places
+        valueLength = String.length stringValue
     in
-        let
-            head =
-                List.head parts |> Maybe.withDefault "0"
-
-            tail =
-                List.tail parts |> Maybe.withDefault []
-        in
-            String.join "." (head :: List.map (String.padRight (round places) '0') tail)
+        String.left (valueLength - places) stringValue ++ "." ++ String.right places stringValue
