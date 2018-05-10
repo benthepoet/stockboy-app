@@ -95,7 +95,7 @@ get path token decoder =
     Http.request
         { method = "GET"
         , url = apiUrl path
-        , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
+        , headers = [ Http.header "Authorization" <| "Bearer " ++ token ]
         , body = Http.emptyBody
         , expect = Http.expectJson decoder
         , timeout = Nothing
