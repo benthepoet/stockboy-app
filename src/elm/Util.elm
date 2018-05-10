@@ -1,10 +1,12 @@
 module Util exposing (..)
 
 
+formatCurrency : Float -> String
 formatCurrency =
     (++) "$" << (toFixed 2)
 
 
+toFixed : Int -> Float -> String
 toFixed places value =
     let
         stringValue =
