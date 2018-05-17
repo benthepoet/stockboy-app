@@ -58,6 +58,7 @@ type Msg
     | RefreshData Time.Time
     | RouteChange Route.Route
     | Search
+    | ShowModal ModalState
     | SignOut
     | SignUp
     | SubmitSignIn
@@ -225,6 +226,11 @@ update msg model =
             , Navigation.newUrl (Route.toPath <| Route.Protected Route.StockList)
             )
 
+        ShowModal modalState ->
+            ( { model | modalState = modalState }
+            , Cmd.none
+            )
+
         SignOut ->
             let
                 token =
@@ -282,33 +288,55 @@ subscriptions model =
     Time.every model.refreshInterval RefreshData
 
 
-viewError model =
+viewModal model =
     div [ Attributes.class "modal" ]
         [ input
-            [ Attributes.name "error-modal"
+            [ Attributes.name "main-modal"
             , Attributes.type_ "checkbox"
-            , Attributes.checked <| model.modalState == Error
+            , Attributes.checked <| model.modalState /= Empty
             ]
             []
         , label
-            [ Attributes.for "error-modal"
+            [ Attributes.for "main-modal"
             , Attributes.class "overlay"
             ]
             []
-        , article []
-            [ header []
-                [ h3 [] [ text "Warning" ]
-                ]
-            , section [ Attributes.class "content" ]
-                [ text "An unexpected error occurred." ]
-            , footer []
-                [ a
-                    [ Attributes.class "button"
-                    , Events.onClick DismissModal
+        , case model.modalState of
+            Buy ->
+                article [] 
+                    [ header []
+                        [ h3 [] [ text "Buy" ] 
+                        ]
+                    , footer []
+                        [ a
+                            [ Attributes.class "button" 
+                            , Events.onClick DismissModal
+                            ]
+                            []
+                        ]
                     ]
-                    [ text "Dismiss" ]
+        
+            Empty -> 
+                article [] []
+            
+            Error ->
+                article []
+                    [ header []
+                        [ h3 [] [ text "Warning" ]
+                        ]
+                    , section [ Attributes.class "content" ]
+                        [ text "An unexpected error occurred." ]
+                    , footer []
+                        [ a
+                            [ Attributes.class "button"
+                            , Events.onClick DismissModal
+                            ]
+                            [ text "Dismiss" ]
+                        ]
                 ]
-            ]
+                
+            Sell ->
+                article [] []
         ]
 
 
@@ -554,7 +582,7 @@ view model =
                 ]
             , div [ Attributes.class "fifth-600 fourth-1000" ] []
             ]
-        , viewError model
+        , viewModal model
         ]
 
 
