@@ -29,7 +29,7 @@ type alias Model =
     , confirmPassword : String
     , email : String
     , equity : Float
-    , error : Bool
+    , modalState : ModalState
     , password : String
     , positions : List Request.Position
     , refreshInterval : Time.Time
@@ -40,8 +40,14 @@ type alias Model =
     }
 
 
+type ModalState
+    = Buy
+    | Empty
+    | Error
+    | Sell
+
 type Msg
-    = DismissError
+    = DismissModal
     | Home
     | LoadOrder (Result Http.Error Request.Order)
     | LoadPositions (Result Http.Error (List Request.Position))
@@ -76,7 +82,7 @@ init flags location =
         route =
             Route.parse location
     in
-        ( Model 0 "" "" 0 False "" [] refreshInterval route Nothing [] flags.token
+        ( Model 0 "" "" 0 Empty "" [] refreshInterval route Nothing [] flags.token
         , Cmd.batch
             [ Task.perform RouteChange (Task.succeed route)
             , forceRefresh
@@ -98,8 +104,8 @@ forceRefresh =
 
 update msg model =
     case msg of
-        DismissError ->
-            ( { model | error = False }
+        DismissModal ->
+            ( { model | modalState = Empty }
             , Cmd.none
             )
 
@@ -112,7 +118,7 @@ update msg model =
             ( model, Cmd.none )
             
         LoadOrder (Err _) ->
-            ( { model | error = True }
+            ( { model | modalState = Error }
             , Cmd.none
             )
 
@@ -125,7 +131,7 @@ update msg model =
             )
 
         LoadPositions (Err _) ->
-            ( { model | error = True }
+            ( { model | modalState = Error }
             , Cmd.none
             )
 
@@ -135,7 +141,7 @@ update msg model =
             )
 
         LoadStock (Err _) ->
-            ( { model | error = True }
+            ( { model | modalState = Error }
             , Cmd.none
             )
 
@@ -145,7 +151,7 @@ update msg model =
             )
 
         LoadStocks (Err _) ->
-            ( { model | error = True }
+            ( { model | modalState = Error }
             , Cmd.none
             )
 
@@ -163,7 +169,7 @@ update msg model =
                 )
 
         LoadToken (Err _) ->
-            ( { model | error = True }
+            ( { model | modalState = Error }
             , Cmd.none
             )
 
@@ -173,7 +179,7 @@ update msg model =
             )
 
         LoadUser (Err _) ->
-            ( { model | error = True }
+            ( { model | modalState = Error }
             , Cmd.none
             )
 
@@ -281,7 +287,7 @@ viewError model =
         [ input
             [ Attributes.name "error-modal"
             , Attributes.type_ "checkbox"
-            , Attributes.checked model.error
+            , Attributes.checked <| model.modalState == Error
             ]
             []
         , label
@@ -298,7 +304,7 @@ viewError model =
             , footer []
                 [ a
                     [ Attributes.class "button"
-                    , Events.onClick DismissError
+                    , Events.onClick DismissModal
                     ]
                     [ text "Dismiss" ]
                 ]
@@ -354,6 +360,35 @@ viewPosition position =
                 ]
             , h4 [] [ text position.stock.symbol ]
             , p [] [ text <| (toString position.totalUnits) ++ " shares" ]
+            ]
+        ]
+        
+viewPositionBuy model =
+    div [ Attributes.class "modal" ]
+        [ input
+            [ Attributes.name "buy-modal"
+            , Attributes.type_ "checkbox"
+            , Attributes.checked model.modalState
+            ]
+            []
+        , label
+            [ Attributes.for "buy-modal"
+            , Attributes.class "overlay"
+            ]
+            []
+        , article []
+            [ header []
+                [ h3 [] [ text "Buy Stock" ]
+                ]
+            , section [ Attributes.class "content" ]
+                [ text "An unexpected error occurred." ]
+            , footer []
+                [ a
+                    [ Attributes.class "button"
+                    , Events.onClick DismissModal
+                    ]
+                    [ text "Dismiss" ]
+                ]
             ]
         ]
 
