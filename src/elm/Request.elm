@@ -9,9 +9,11 @@ type alias AuthResponse =
     { token : String
     }
 
+
 type alias Order =
     { units : Int
     }
+
 
 type alias Position =
     { averagePrice : Float
@@ -19,6 +21,7 @@ type alias Position =
     , totalUnits : Int
     , stock : Stock
     }
+
 
 type alias Stock =
     { id : Int
@@ -47,14 +50,17 @@ authEncoder email password =
         , ( "password", Encode.string password )
         ]
 
+
 orderEncoder units =
-    Encode.object 
+    Encode.object
         [ ( "units", Encode.int units )
         ]
+
 
 orderDecoder =
     Decode.map Order
         (Decode.field "units" Decode.int)
+
 
 positionDecoder =
     Decode.map4 Position
@@ -115,7 +121,8 @@ get path token decoder =
         , timeout = Nothing
         , withCredentials = False
         }
-        
+
+
 post path token decoder body =
     Http.request
         { method = "POST"

@@ -46,6 +46,7 @@ type ModalState
     | Error
     | Sell
 
+
 type Msg
     = DismissModal
     | Home
@@ -117,7 +118,7 @@ update msg model =
 
         LoadOrder (Ok order) ->
             ( model, Cmd.none )
-            
+
         LoadOrder (Err _) ->
             ( { model | modalState = Error }
             , Cmd.none
@@ -303,22 +304,22 @@ viewModal model =
             []
         , case model.modalState of
             Buy ->
-                article [] 
+                article []
                     [ header []
-                        [ h3 [] [ text "Buy" ] 
+                        [ h3 [] [ text "Buy" ]
                         ]
                     , footer []
                         [ a
-                            [ Attributes.class "button" 
+                            [ Attributes.class "button"
                             , Events.onClick DismissModal
                             ]
                             []
                         ]
                     ]
-        
-            Empty -> 
+
+            Empty ->
                 article [] []
-            
+
             Error ->
                 article []
                     [ header []
@@ -333,8 +334,8 @@ viewModal model =
                             ]
                             [ text "Dismiss" ]
                         ]
-                ]
-                
+                    ]
+
             Sell ->
                 article [] []
         ]
@@ -390,7 +391,8 @@ viewPosition position =
             , p [] [ text <| (toString position.totalUnits) ++ " shares" ]
             ]
         ]
-        
+
+
 viewPositionBuy model =
     div [ Attributes.class "modal" ]
         [ input
