@@ -5,7 +5,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 
 
-type alias AuthResponse =
+type alias Auth =
     { token : String
     }
 
@@ -41,7 +41,7 @@ apiUrl =
 
 
 authDecoder =
-    Decode.map AuthResponse <| Decode.field "token" Decode.string
+    Decode.map Auth <| Decode.field "token" Decode.string
 
 
 authEncoder email password =

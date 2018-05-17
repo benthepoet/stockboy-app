@@ -44,7 +44,7 @@ type ModalState
     = Buy
     | Empty
     | Error
-    | Sell
+    | Sell String
 
 
 type Msg
@@ -54,7 +54,7 @@ type Msg
     | LoadPositions (Result Http.Error (List Request.Position))
     | LoadStock (Result Http.Error Request.Stock)
     | LoadStocks (Result Http.Error (List Request.Stock))
-    | LoadToken (Result Http.Error Request.AuthResponse)
+    | LoadToken (Result Http.Error Request.Auth)
     | LoadUser (Result Http.Error Request.User)
     | RefreshData Time.Time
     | RouteChange Route.Route
@@ -328,7 +328,7 @@ viewModal model =
                     , section [ Attributes.class "content" ]
                         [ text "An unexpected error occurred." ]
                     , footer []
-                        [ a
+                        [ button
                             [ Attributes.class "button"
                             , Events.onClick DismissModal
                             ]
@@ -336,8 +336,37 @@ viewModal model =
                         ]
                     ]
 
-            Sell ->
-                article [] []
+            Sell units ->
+                let
+                    unitsInt = Result.withDefault 0 <| String.toInt units
+                in 
+                    article [] 
+                        [ header []
+                            [ h3 [] [ text "Sell" ]
+                            ]
+                        , section [ Attributes.class "content" ]
+                            [ input 
+                                [ Attributes.min <| toString 0
+                                , Attributes.type_ "number" 
+                                , Attributes.value units 
+                                , Events.onInput <| ShowModal << Sell
+                                ] [] 
+                            ]
+                        , footer []
+                            [ button
+                                [ Attributes.class "button"
+                                , Attributes.disabled <| unitsInt < 1
+                                , Events.onClick DismissModal
+                                ]
+                                [ text "Submit" ]
+                            , label
+                                [ Attributes.for "main-modal"
+                                , Attributes.class "button dangerous"
+                                , Events.onClick DismissModal
+                                ]
+                                [ text "Cancel" ]
+                            ]
+                        ]
         ]
 
 
@@ -389,36 +418,6 @@ viewPosition position =
                 ]
             , h4 [] [ text position.stock.symbol ]
             , p [] [ text <| (toString position.totalUnits) ++ " shares" ]
-            ]
-        ]
-
-
-viewPositionBuy model =
-    div [ Attributes.class "modal" ]
-        [ input
-            [ Attributes.name "buy-modal"
-            , Attributes.type_ "checkbox"
-            , Attributes.checked model.modalState
-            ]
-            []
-        , label
-            [ Attributes.for "buy-modal"
-            , Attributes.class "overlay"
-            ]
-            []
-        , article []
-            [ header []
-                [ h3 [] [ text "Buy Stock" ]
-                ]
-            , section [ Attributes.class "content" ]
-                [ text "An unexpected error occurred." ]
-            , footer []
-                [ a
-                    [ Attributes.class "button"
-                    , Events.onClick DismissModal
-                    ]
-                    [ text "Dismiss" ]
-                ]
             ]
         ]
 
@@ -550,7 +549,10 @@ viewStockPosition model =
                                     []
 
                                 Just _ ->
-                                    [ button [] [ text "Sell" ]
+                                    [ button 
+                                        [ Events.onClick <| ShowModal <| Sell <| toString 0 
+                                        ] 
+                                        [ text "Sell" ]
                                     ]
                             )
                         ]
