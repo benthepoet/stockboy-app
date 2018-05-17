@@ -9,14 +9,16 @@ type alias AuthResponse =
     { token : String
     }
 
+type alias Order =
+    { units : Int
+    }
 
-type alias PositionResponse =
+type alias Position =
     { averagePrice : Float
     , profitRatio : Float
     , totalUnits : Int
     , stock : Stock
     }
-
 
 type alias Stock =
     { id : Int
@@ -45,9 +47,17 @@ authEncoder email password =
         , ( "password", Encode.string password )
         ]
 
+orderEncoder units =
+    Encode.object 
+        [ ( "units", Encode.int units )
+        ]
+
+orderDecoder =
+    Decode.map Order
+        (Decode.field "units" Decode.int)
 
 positionDecoder =
-    Decode.map4 PositionResponse
+    Decode.map4 Position
         (Decode.field "average_price" Decode.float)
         (Decode.field "profit_ratio" Decode.float)
         (Decode.field "total_units" Decode.int)
@@ -69,6 +79,10 @@ userDecoder =
 
 authenticate email password =
     Http.post (apiUrl "auth") (Http.jsonBody <| authEncoder email password) authDecoder
+
+
+createStockOrder token id units =
+    post ("stocks/" ++ (toString id) ++ "/orders") token orderDecoder <| orderEncoder units
 
 
 getPositions token =
@@ -97,6 +111,17 @@ get path token decoder =
         , url = apiUrl path
         , headers = [ Http.header "Authorization" <| "Bearer " ++ token ]
         , body = Http.emptyBody
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = False
+        }
+        
+post path token decoder body =
+    Http.request
+        { method = "POST"
+        , url = apiUrl path
+        , headers = [ Http.header "Authorization" <| "Bearer " ++ token ]
+        , body = Http.jsonBody body
         , expect = Http.expectJson decoder
         , timeout = Nothing
         , withCredentials = False

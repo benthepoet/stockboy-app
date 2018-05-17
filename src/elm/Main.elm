@@ -31,7 +31,7 @@ type alias Model =
     , equity : Float
     , error : Bool
     , password : String
-    , positions : List Request.PositionResponse
+    , positions : List Request.Position
     , refreshInterval : Time.Time
     , route : Route.Route
     , stock : Maybe Request.Stock
@@ -43,7 +43,8 @@ type alias Model =
 type Msg
     = DismissError
     | Home
-    | LoadPositions (Result Http.Error (List Request.PositionResponse))
+    | LoadOrder (Result Http.Error Request.Order)
+    | LoadPositions (Result Http.Error (List Request.Position))
     | LoadStock (Result Http.Error Request.Stock)
     | LoadStocks (Result Http.Error (List Request.Stock))
     | LoadToken (Result Http.Error Request.AuthResponse)
@@ -105,6 +106,14 @@ update msg model =
         Home ->
             ( model
             , Navigation.newUrl (Route.toPath <| Route.Protected Route.MyPositions)
+            )
+
+        LoadOrder (Ok order) ->
+            ( model, Cmd.none )
+            
+        LoadOrder (Err _) ->
+            ( { model | error = True }
+            , Cmd.none
             )
 
         LoadPositions (Ok positions) ->
