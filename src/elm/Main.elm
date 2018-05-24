@@ -338,21 +338,23 @@ viewModal model =
 
             Sell position units ->
                 let
-                    unitsInt = Result.withDefault 0 <| String.toInt units
-                in 
-                    article [] 
+                    unitsInt =
+                        Result.withDefault 0 <| String.toInt units
+                in
+                    article []
                         [ header []
                             [ h3 [] [ text "Sell" ]
                             ]
                         , section [ Attributes.class "content" ]
                             [ label [] [ text "Shares" ]
-                            , input 
+                            , input
                                 [ Attributes.min <| toString 0
                                 , Attributes.max <| toString position.totalUnits
-                                , Attributes.type_ "number" 
-                                , Attributes.value units 
+                                , Attributes.type_ "number"
+                                , Attributes.value units
                                 , Events.onInput <| ShowModal << Sell position
-                                ] [] 
+                                ]
+                                []
                             ]
                         , footer []
                             [ button
@@ -546,20 +548,21 @@ viewStockPosition model =
                             [ h3 [] [ text stock.name ]
                             ]
                         , section [ Attributes.class "padding" ]
-                            ((Widgets.staticField "Price" (Util.formatCurrency stock.lastPrice)) ::
-                            (case position of
-                                Nothing ->
-                                    []
+                            ((Widgets.staticField "Price" (Util.formatCurrency stock.lastPrice))
+                                :: (case position of
+                                        Nothing ->
+                                            []
 
-                                Just stockPosition ->
-                                    [ Widgets.staticField "Shares Held" <| toString stockPosition.totalUnits
-                                    , button 
-                                        [ Attributes.class "dangerous"
-                                        , Events.onClick <| ShowModal <| Sell stockPosition <| toString 0 
-                                        ] 
-                                        [ text "Sell" ]
-                                    ]
-                            ))
+                                        Just stockPosition ->
+                                            [ Widgets.staticField "Shares Held" <| toString stockPosition.totalUnits
+                                            , button
+                                                [ Attributes.class "dangerous"
+                                                , Events.onClick <| ShowModal <| Sell stockPosition <| toString 0
+                                                ]
+                                                [ text "Sell" ]
+                                            ]
+                                   )
+                            )
                         ]
                     ]
 
