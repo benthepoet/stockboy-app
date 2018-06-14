@@ -12,7 +12,7 @@
     "url": "git+https://github.com/benthepoet/stockboy-app.git"
   },
   "author": "Ben Hanna <benpaulhanna@gmail.com>",
-  "license": "BSD3",
+  "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/benthepoet/stockboy-app/issues"
   },
